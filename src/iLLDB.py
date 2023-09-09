@@ -1,0 +1,25 @@
+import lldb
+import os
+
+
+def __lldb_init_module(debugger: lldb.SBDebugger, internal_dict: dict) -> None:
+    file_path = os.path.realpath(__file__)
+    dir_name = os.path.dirname(file_path)
+    load_commands(dir_name, debugger)
+
+
+def load_commands(dir_name: str, debugger: lldb.SBDebugger) -> None:
+    for file in os.listdir(dir_name):
+        full_path = dir_name + '/' + file
+
+        if file.endswith('.py'):
+            cmd = 'command script import '
+        elif file.endswith('.h'):
+            cmd = 'command source -e0 -s1 '
+        elif os.path.isdir(full_path):
+            load_commands(full_path, debugger)
+            continue
+        else:
+            continue
+
+        lldb.debugger.HandleCommand(cmd + full_path)
