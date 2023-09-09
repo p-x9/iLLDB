@@ -9,10 +9,14 @@ def __lldb_init_module(debugger: lldb.SBDebugger, internal_dict: dict) -> None:
 
 
 def load_commands(dir_name: str, debugger: lldb.SBDebugger) -> None:
+    ignored_files = {"iLLDB.py"}
+
     for file in os.listdir(dir_name):
         full_path = dir_name + '/' + file
 
-        if file.endswith('.py'):
+        if file in ignored_files:
+            continue
+        elif file.endswith('.py'):
             cmd = 'command script import '
         elif file.endswith('.h'):
             cmd = 'command source -e0 -s1 '
