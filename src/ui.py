@@ -25,7 +25,8 @@ def handle_command(
 
 
 def parse_args(args: list[str]) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="LLDB subcommand for ui debugging")
+    parser = argparse.ArgumentParser(description="UI debugging",
+                                     formatter_class=util.HelpFormatter)
     subparsers = parser.add_subparsers(title="Subcommands", dest="subcommand")
 
     tree_command = subparsers.add_parser("tree", help="Show view hierarchie")

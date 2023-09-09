@@ -1,4 +1,5 @@
 import lldb
+import argparse
 
 
 def exp_script(debugger: lldb.SBDebugger, script: str, lang: str = 'swift') -> str:
@@ -11,3 +12,7 @@ def exp_script(debugger: lldb.SBDebugger, script: str, lang: str = 'swift') -> s
 
     output = ret.GetOutput()
     return str(output)
+
+
+class HelpFormatter(argparse.RawTextHelpFormatter, argparse.ArgumentDefaultsHelpFormatter):
+    pass
