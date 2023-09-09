@@ -1,6 +1,11 @@
 import Foundation
 
 func listFilesInDirectory(_ directoryURL: URL, level: Int = 0) {
+    if level == 0 {
+        let isDirectory = (try? directoryURL.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory == true
+        print("\(isDirectory ? "📁 " : "📄 ")" + directoryURL.lastPathComponent)
+    }
+
     var fileHierarchy = ""
 
     do {
@@ -9,7 +14,7 @@ func listFilesInDirectory(_ directoryURL: URL, level: Int = 0) {
 
         for (index, url) in contents.enumerated() {
             let isDirectory = (try? url.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory == true
-            let indentation = String(repeating: "│   ", count: level) + (index == contents.count - 1 ? "└── " : "├── ")
+            let indentation = String(repeating: "│  ", count: level) + (index == contents.count - 1 ? "└─ " : "├─ ")
 
             if isDirectory {
                 fileHierarchy = "\(indentation)📁 \(url.lastPathComponent)"
