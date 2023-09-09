@@ -6,6 +6,7 @@ def __lldb_init_module(debugger: lldb.SBDebugger, internal_dict: dict) -> None:
     file_path = os.path.realpath(__file__)
     dir_name = os.path.dirname(file_path)
     load_commands(dir_name, debugger)
+    print("[iLLDB] loaded")
 
 
 def load_commands(dir_name: str, debugger: lldb.SBDebugger) -> None:
