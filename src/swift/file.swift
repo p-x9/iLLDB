@@ -25,5 +25,7 @@ func listFilesInDirectory(_ directoryURL: URL, level: Int = 0) {
                 print(fileHierarchy)
             }
         }
-    } catch {}
+    } catch {
+        print(error.localizedDescription)
+    }
 }
