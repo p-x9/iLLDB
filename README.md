@@ -9,9 +9,9 @@ LLDB Extension for iOS App Development
 [![Github top language](https://img.shields.io/github/languages/top/p-x9/iLLDB)](https://github.com/p-x9/iLLDB/)
 
 ## Feature
-- [Show view hierarchy](#show-ui-hierarchy)
+- [Show view hierarchy](#ui-hierarchy)
 - [Easy operation of UserDefaults](#userdefaults)
-- [Show device information](#deviceinfo)
+- [Show device information](#device-info)
 - [Show App information](#app-info)
 - [Show file hierarchy](#file-hierarchy)
 
