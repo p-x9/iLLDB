@@ -27,9 +27,12 @@ def handle_command(
 def parse_args(args: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="File debugging",
                                      formatter_class=util.HelpFormatter)
-    subparsers = parser.add_subparsers(title="Subcommands", dest="subcommand")
+    subparsers = parser.add_subparsers(title="Subcommands",
+                                       dest="subcommand")
 
-    tree_command = subparsers.add_parser("tree", help="Show file hierarchie")
+    tree_command = subparsers.add_parser("tree",
+                                         help="Show file hierarchie",
+                                         formatter_class=util.HelpFormatter)
     tree_command.add_argument("-l", "--library", action="store_true", help="library directory")
     tree_command.add_argument("--documents", action="store_true", help="documents directory")
     tree_command.add_argument("--tmp", type=str, help="tmp directory")

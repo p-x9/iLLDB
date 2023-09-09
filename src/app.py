@@ -29,7 +29,9 @@ def parse_args(args: list[str]) -> argparse.Namespace:
                                      formatter_class=util.HelpFormatter)
     subparsers = parser.add_subparsers(title="Subcommands", dest="subcommand")
 
-    subparsers.add_parser("info", help="Show App info")
+    subparsers.add_parser("info",
+                          help="Show App info",
+                          formatter_class=util.HelpFormatter)
 
     return parser.parse_args(args)
 

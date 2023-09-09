@@ -29,7 +29,9 @@ def parse_args(args: list[str]) -> argparse.Namespace:
                                      formatter_class=util.HelpFormatter)
     subparsers = parser.add_subparsers(title="Subcommands", dest="subcommand")
 
-    tree_command = subparsers.add_parser("tree", help="Show view hierarchie")
+    tree_command = subparsers.add_parser("tree",
+                                         help="Show view hierarchie",
+                                         formatter_class=util.HelpFormatter)
     tree_command.add_argument("-d", "--detail", action="store_true", help="Enable detailed mode")
     tree_command.add_argument("-s", "--simple", action="store_true", help="Enable simpled mode")
     tree_command.add_argument("--window", type=str, help="Specify the target window")
