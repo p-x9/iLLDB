@@ -8,7 +8,7 @@ import util
 
 
 def __lldb_init_module(debugger: lldb.SBDebugger, internal_dict: dict) -> None:
-    debugger.HandleCommand('command script add -f device.handle_command device -h "device debugging[iLLDB]"')
+    debugger.HandleCommand('command script add -f app.handle_command app -h "application debugging[iLLDB]"')
 
 
 def handle_command(
@@ -25,11 +25,11 @@ def handle_command(
 
 
 def parse_args(args: list[str]) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Device debugging",
+    parser = argparse.ArgumentParser(description="App debugging",
                                      formatter_class=util.HelpFormatter)
     subparsers = parser.add_subparsers(title="Subcommands", dest="subcommand")
 
-    subparsers.add_parser("info", help="Show device info")
+    subparsers.add_parser("info", help="Show App info")
 
     return parser.parse_args(args)
 
@@ -38,11 +38,11 @@ def info(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCom
     file_path = os.path.realpath(__file__)
     dir_name = os.path.dirname(file_path)
 
-    script_ret = subprocess.run(f"cat {dir_name}/swift/device.swift", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    script_ret = subprocess.run(f"cat {dir_name}/swift/app.swift", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
     script = script_ret.stdout
     script += """
-    printDeviceInfo()
+    printAppInfo()
     """
 
     ret = util.exp_script(
