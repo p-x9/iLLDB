@@ -15,6 +15,12 @@ LLDB Extension for iOS App Development
 - [Show App information](#app-info)
 - [Show file hierarchy](#file-hierarchy)
 
+## Set up
+1. clone this repository
+2. Add the following line to ~/.lldbinit
+    ```
+    command script import {PATH TO iLLDB}/src/iLLDB.py
+    ```
 
 ## Usage
 
