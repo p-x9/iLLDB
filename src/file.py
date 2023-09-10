@@ -24,6 +24,8 @@ def handle_command(
         tree(args, debugger, result)
     elif args.subcommand == "open":
         open(args, debugger, result)
+    elif args.subcommand == "cat":
+        cat(args, debugger, result)
 
 
 def parse_args(args: list[str]) -> argparse.Namespace:
@@ -38,7 +40,7 @@ def parse_args(args: list[str]) -> argparse.Namespace:
     tree_command.add_argument("-b", "--bundle", action="store_true", help="bundle directory")
     tree_command.add_argument("-l", "--library", action="store_true", help="library directory")
     tree_command.add_argument("--documents", action="store_true", help="documents directory")
-    tree_command.add_argument("--tmp", type=str, help="tmp directory")
+    tree_command.add_argument("--tmp", action="store_true", help="tmp directory")
 
     open_command = subparsers.add_parser("open",
                                          help="Open directory with Finder (Simulator Only)",
@@ -46,7 +48,15 @@ def parse_args(args: list[str]) -> argparse.Namespace:
     open_command.add_argument("-b", "--bundle", action="store_true", help="bundle directory")
     open_command.add_argument("-l", "--library", action="store_true", help="library directory")
     open_command.add_argument("--documents", action="store_true", help="documents directory")
-    open_command.add_argument("--tmp", type=str, help="tmp directory")
+    open_command.add_argument("--tmp", action="store_true", help="tmp directory")
+
+    cat_command = subparsers.add_parser("cat",
+                                        help="The content of the specified file is retrieved and displayed",
+                                        formatter_class=util.HelpFormatter)
+    cat_command.add_argument("path",
+                             type=str,
+                             help="path")
+    cat_command.add_argument("--mode", type=str, default='text', help="mode [text, plist]")
 
     return parser.parse_args(args)
 
@@ -101,3 +111,20 @@ def open(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCom
             shell += f"{ret.GetObjectDescription()}"
 
     subprocess.run(shell, shell=True)
+
+
+def cat(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCommandReturnObject) -> None:
+    file_path = os.path.realpath(__file__)
+    dir_name = os.path.dirname(file_path)
+
+    script_ret = subprocess.run(f"cat {dir_name}/objc/cat.m", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
+    script = script_ret.stdout
+    script = script.replace("<FILE_PATH>", args.path)
+    script = script.replace("<MODE>", args.mode)
+
+    _ = util.exp_script(
+        debugger,
+        script,
+        lang=lldb.eLanguageTypeObjC
+    )
