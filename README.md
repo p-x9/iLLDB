@@ -15,6 +15,7 @@ LLDB Extension for iOS App Development
 - [Show App information](#app-info)
 - [Show file hierarchy](#file-hierarchy)
 - [Open directory in Finder (Simulator Only)](#open-directory-in-finder-app-simulator-only)
+- [Show file contents]()
 
 ## Set up
 1. clone this repository
@@ -211,6 +212,33 @@ optional arguments:
   --tmp TMP
     tmp directory (default: None)
 ```
+
+### Show file Contents
+```
+(lldb) file cat -h
+usage:  cat
+       [-h]
+       [--mode MODE]
+       path
+positional arguments:
+  path
+    path
+optional arguments:
+  -h, --help
+    show this help message and exit
+  --mode MODE
+    mode [text, plist] (default: text)
+```
+
+#### Example
+- text file
+  ```
+  file cat "path"
+  ```
+- plist file
+  ```
+  file cat "path" --mode plist
+  ```
 
 ## License
 iLLDB is released under the MIT License. See [LICENSE](./LICENSE)
