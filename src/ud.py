@@ -24,23 +24,32 @@ def handle_command(
     else:
         script += "@import Foundation;\nNSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];\n"
 
-    if args.read:
-        key = args.read
-        script += f"(id)(@[userDefaults objectForKey:@\"{key}\"]);"
-    elif args.write:
-        key = args.write
+    if args.subcommand == "read":
+        key = args.key
+        script += f"""({{
+        id val = [userDefaults stringForKey:@\"{key}\"];
+        if (val != nil) {{
+            printf("\\"%s\\"", (char*)[val UTF8String]);
+        }} else {{
+            val = [userDefaults objectForKey:@\"{key}\"];
+        }}
+        val;
+        }})
+        """
+    elif args.subcommand == "write":
+        key = args.key
         type = args.type
         value = args.value
         if type == "number":
             script += f"[userDefaults setObject:@({value}) forKey:@\"{key}\"];"
         else:
             script += f"[userDefaults setObject:@\"{value}\" forKey:@\"{key}\"];"
-    elif args.delete:
-        key = args.delete
+    elif args.subcommand == "delete":
+        key = args.key
         script += f"[userDefaults removeObjectForKey:@\"{key}\"];"
-    elif args.read_all:
+    elif args.subcommand == "read-all":
         script += "[userDefaults dictionaryRepresentation];"
-    elif args.delete_all:
+    elif args.subcommand == "delete-all":
         script += r"""
         NSDictionary *allUserDefaults = [userDefaults dictionaryRepresentation];
 
@@ -62,23 +71,50 @@ def parse_args(args: list[str]) -> argparse.Namespace:
     description = "UserDefault debugging"
     parser = argparse.ArgumentParser(description=description,
                                      formatter_class=util.HelpFormatter)
-    parser.add_argument("--read", "-r", type=str, help="read UserDefault value")
-    parser.add_argument("--write", "-w", type=str, help="write UserDefault value")
-    parser.add_argument("--delete", type=str, help="delete UserDefault value")
+    subparsers = parser.add_subparsers(title="Subcommands", dest="subcommand")
 
-    parser.add_argument("--type",
-                        type=str,
-                        default='str',
-                        help="type of value to set['str', 'number']")
-    parser.add_argument("value",
-                        nargs='?',
-                        default='',
-                        type=str,
-                        help="value to set")
+    # read
+    read_command = subparsers.add_parser("read",
+                                         help="read UserDefault value",
+                                         formatter_class=util.HelpFormatter)
+    read_command.add_argument("--suite", type=str, help="suite for UserDefault")
+    read_command.add_argument("key",
+                              type=str,
+                              help="key")
 
-    parser.add_argument("--read-all", action="store_true", help="read all UserDefault value")
-    parser.add_argument("--delete-all", action="store_true", help="read all UserDefault value")
+    # write
+    write_command = subparsers.add_parser("write",
+                                          help="write UserDefault value",
+                                          formatter_class=util.HelpFormatter)
+    write_command.add_argument("--suite", type=str, help="suite for UserDefault")
+    write_command.add_argument("key",
+                               type=str,
+                               help="key")
+    write_command.add_argument("value",
+                               type=str,
+                               help="value to set")
+    write_command.add_argument("--type",
+                               type=str,
+                               default='str',
+                               help="type of value to set['str', 'number']")
 
-    parser.add_argument("--suite", type=str, help="suite for UserDefault")
+    # delete
+    delete_command = subparsers.add_parser("delete",
+                                           help="delete UserDefault value",
+                                           formatter_class=util.HelpFormatter)
+    delete_command.add_argument("--suite", type=str, help="suite for UserDefault")
+    delete_command.add_argument("key",
+                                type=str,
+                                help="key")
+
+    read_all = subparsers.add_parser("read-all",
+                                     help="read all UserDefault value",
+                                     formatter_class=util.HelpFormatter)
+    read_all.add_argument("--suite", type=str, help="suite for UserDefault")
+
+    delete_all = subparsers.add_parser("delete-all",
+                                       help="delete all UserDefault value",
+                                       formatter_class=util.HelpFormatter)
+    delete_all.add_argument("--suite", type=str, help="suite for UserDefault")
 
     return parser.parse_args(args)
