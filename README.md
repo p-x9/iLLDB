@@ -82,29 +82,51 @@ optional arguments:
     ```
 
 ### UserDefaults
+```
+usage:
+       [-h]
+       {read,write,delete,read-all,delete-all}
+       ...
+UserDefault debugging
+optional arguments:
+  -h, --help
+    show this help message and exit
+Subcommands:
+  {read,write,delete,read-all,delete-all}
+    read
+    read UserDefault value
+    write
+    write UserDefault value
+    delete
+    delete UserDefault value
+    read-all
+    read all UserDefault value
+    delete-all
+    delete all UserDefault value
+```
 #### read
 ```sh
-ud --read "key"
+ud read "key"
 ```
 
 #### write
 ```sh
-ud --write "key" "value"
+ud write "key" "value"
 ```
 
 #### delete
 ```sh
-ud --delete "key"
+ud delete "key"
 ```
 
 #### read all
 ```sh
-ud --read-all
+ud read-all
 ```
 
 #### delete all
 ```sh
-ud --delete-all
+ud delete-all
 ```
 
 ### Device Info
