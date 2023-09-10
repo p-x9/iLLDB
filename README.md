@@ -15,7 +15,7 @@ LLDB Extension for iOS App Development
 - [Show App information](#app-info)
 - [Show file hierarchy](#file-hierarchy)
 - [Open directory in Finder (Simulator Only)](#open-directory-in-finder-app-simulator-only)
-- [Show file contents]()
+- [Show file contents](#show-file-contents)
 
 ## Set up
 1. clone this repository
