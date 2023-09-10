@@ -22,6 +22,8 @@ def handle_command(
 
     if args.subcommand == "tree":
         tree(args, debugger, result)
+    elif args.subcommand == "open":
+        open(args, debugger, result)
 
 
 def parse_args(args: list[str]) -> argparse.Namespace:
@@ -33,15 +35,18 @@ def parse_args(args: list[str]) -> argparse.Namespace:
     tree_command = subparsers.add_parser("tree",
                                          help="Show file hierarchie",
                                          formatter_class=util.HelpFormatter)
+    tree_command.add_argument("-b", "--bundle", action="store_true", help="bundle directory")
     tree_command.add_argument("-l", "--library", action="store_true", help="library directory")
     tree_command.add_argument("--documents", action="store_true", help="documents directory")
     tree_command.add_argument("--tmp", type=str, help="tmp directory")
 
-    parser.add_argument("path",
-                        nargs='?',
-                        default='',
-                        type=str,
-                        help="path to show tree")
+    open_command = subparsers.add_parser("open",
+                                         help="Open directory with Finder (Simulator Only)",
+                                         formatter_class=util.HelpFormatter)
+    open_command.add_argument("-b", "--bundle", action="store_true", help="bundle directory")
+    open_command.add_argument("-l", "--library", action="store_true", help="library directory")
+    open_command.add_argument("--documents", action="store_true", help="documents directory")
+    open_command.add_argument("--tmp", type=str, help="tmp directory")
 
     return parser.parse_args(args)
 
@@ -53,7 +58,9 @@ def tree(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCom
     script_ret = subprocess.run(f"cat {dir_name}/swift/file.swift", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
     script = script_ret.stdout
-    if args.library:
+    if args.bundle:
+        script += "listFilesInDirectory(Bundle.main.bundleURL)"
+    elif args.library:
         script += "listFilesInDirectory(FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first!)"
     elif args.documents:
         script += "listFilesInDirectory(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!)"
@@ -66,3 +73,31 @@ def tree(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCom
         debugger,
         script
     )
+
+
+def open(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCommandReturnObject) -> None:
+    if not util.isIOSSimulator(debugger):
+        print("Supported only simulator")
+        return
+
+    shell = "open -R "
+
+    script = ""
+    if args.bundle:
+        script += "Bundle.main.bundlePath"
+    elif args.library:
+        script += "FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first!.path"
+    elif args.documents:
+        script += "FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.path"
+    elif args.tmp:
+        script += "FileManager.default.temporaryDirectory.path"
+    elif args.path:
+        shell += f"{args.path}"
+
+    if script != "":
+        ret = util.exp_script(debugger, script)
+        if ret:
+            print(ret.GetObjectDescription())
+            shell += f"{ret.GetObjectDescription()}"
+
+    subprocess.run(shell, shell=True)

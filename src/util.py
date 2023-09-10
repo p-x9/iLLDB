@@ -37,5 +37,19 @@ def exp_script(
         return None
 
 
+def isIOSSimulator(debugger: lldb.SBDebugger) -> bool:
+    script = """
+    @import Foundation;
+    NSString *name = [[[NSProcessInfo processInfo] environment] objectForKey:@"SIMULATOR_DEVICE_NAME"];
+    name;
+    """
+    ret = exp_script(debugger, script, lang=lldb.eLanguageTypeObjC)
+    if ret:
+        result: str = ret.GetObjectDescription()
+        return result != "<nil>"
+    else:
+        return False
+
+
 class HelpFormatter(argparse.RawTextHelpFormatter, argparse.ArgumentDefaultsHelpFormatter):
     pass
