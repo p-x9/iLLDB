@@ -60,8 +60,7 @@ def tree(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCom
     else:
         script += f"\n windowHierarchy(UIApplication.shared.keyWindow, isSimple: {isSimple}, isDetail: {isDetail})"
 
-    ret = util.exp_script(
+    _ = util.exp_script(
         debugger,
         script
     )
-    result.AppendMessage(ret)

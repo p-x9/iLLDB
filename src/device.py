@@ -47,8 +47,7 @@ def info(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCom
     printDeviceInfo()
     """
 
-    ret = util.exp_script(
+    _ = util.exp_script(
         debugger,
         script
     )
-    result.AppendMessage(ret)

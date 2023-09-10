@@ -1,17 +1,40 @@
 import lldb
 import argparse
+from typing import Optional
 
 
-def exp_script(debugger: lldb.SBDebugger, script: str, lang: str = 'swift') -> str:
-    ret = lldb.SBCommandReturnObject()
-    interpreter = debugger.GetCommandInterpreter()
-    interpreter.HandleCommand(f"exp -l{lang} -F Foundation -O --  {script}", ret)
+def exp_script(
+        debugger: lldb.SBDebugger,
+        script: str,
+        lang: int = lldb.eLanguageTypeSwift) -> Optional[lldb.SBValue]:
 
-    if not ret.HasResult():
-        return str(ret.GetError())
+    frame: lldb.SBFrame = (
+        debugger.GetSelectedTarget()
+        .GetProcess()
+        .GetSelectedThread()
+        .GetSelectedFrame()
+    )
 
-    output = ret.GetOutput()
-    return str(output)
+    if not frame:
+        return None
+
+    options = lldb.SBExpressionOptions()
+    options.SetLanguage(lang)
+    options.SetIgnoreBreakpoints(True)
+    options.SetTrapExceptions(False)
+    options.SetTryAllThreads(True)
+    options.SetFetchDynamicValue(lldb.eDynamicCanRunTarget)
+    options.SetUnwindOnError(True)
+    options.SetGenerateDebugInfo(True)
+
+    value: lldb.SBValue = frame.EvaluateExpression(script, options)
+    error: lldb.SBError = value.GetError()
+
+    if error.Success() or error.value == 0x1001:  # success or unknown error
+        return value
+    else:
+        print(error)
+        return None
 
 
 class HelpFormatter(argparse.RawTextHelpFormatter, argparse.ArgumentDefaultsHelpFormatter):

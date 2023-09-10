@@ -62,8 +62,7 @@ def tree(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCom
     elif args.path:
         script += f"listFilesInDirectory(URL(fileURLWithPath: {args.path}))"
 
-    ret = util.exp_script(
+    _ = util.exp_script(
         debugger,
         script
     )
-    result.AppendMessage(ret)

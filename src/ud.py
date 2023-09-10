@@ -20,31 +20,31 @@ def handle_command(
 
     script = ""
     if args.suite:
-        script += "NSUserDefaults *userDefaults = [[NSUserDefaults alloc] initWithSuiteName:suiteName];\n"
+        script += "@import Foundation;\nNSUserDefaults *userDefaults = [[NSUserDefaults alloc] initWithSuiteName:suiteName];\n"
     else:
-        script += "NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];\n"
+        script += "@import Foundation;\nNSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];\n"
 
     if args.read:
         key = args.read
-        script += f"[userDefaults objectForKey:@\"{key}\"];"
+        script += f"(id)(@[userDefaults objectForKey:@\"{key}\"]);"
     elif args.write:
         key = args.write
         type = args.type
         value = args.value
         if type == "number":
-            script += f"id v = [userDefaults setObject:@({value}) forKey:@\"{key}\"];"
+            script += f"[userDefaults setObject:@({value}) forKey:@\"{key}\"];"
         else:
-            script += f"id v = [userDefaults setObject:@\"{value}\" forKey:@\"{key}\"];"
+            script += f"[userDefaults setObject:@\"{value}\" forKey:@\"{key}\"];"
     elif args.delete:
         key = args.delete
-        script += f"id v = [userDefaults removeObjectForKey:@\"{key}\"];"
+        script += f"[userDefaults removeObjectForKey:@\"{key}\"];"
     elif args.read_all:
         script += "[userDefaults dictionaryRepresentation];"
     elif args.delete_all:
         script += r"""
         NSDictionary *allUserDefaults = [userDefaults dictionaryRepresentation];
 
-        for (NSString *key in allUserDefaults) {
+        for (NSString *key in [allUserDefaults allKeys]) {
             [userDefaults removeObjectForKey:key];
         }
         """
@@ -52,9 +52,10 @@ def handle_command(
     ret = util.exp_script(
         debugger,
         script,
-        lang='objc'
+        lang=lldb.eLanguageTypeObjC_plus_plus
     )
-    result.AppendMessage(ret)
+    if ret:
+        result.AppendMessage(ret.GetObjectDescription())
 
 
 def parse_args(args: list[str]) -> argparse.Namespace:
