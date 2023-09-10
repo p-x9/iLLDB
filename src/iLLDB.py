@@ -1,12 +1,14 @@
 import lldb
 import os
 
+iLLDB_VERSION = "0.1.0"
+
 
 def __lldb_init_module(debugger: lldb.SBDebugger, internal_dict: dict) -> None:
     file_path = os.path.realpath(__file__)
     dir_name = os.path.dirname(file_path)
     load_commands(dir_name, debugger)
-    print("[iLLDB] loaded")
+    print(f"[iLLDB] loaded: Version {iLLDB_VERSION}")
 
 
 def load_commands(dir_name: str, debugger: lldb.SBDebugger) -> None:
