@@ -12,7 +12,8 @@
   "mypy.configFile": "mypy.ini",
   "terminal.integrated.env.osx": {
     "PYTHONPATH": "/Applications/Xcode.app/Contents/SharedFrameworks/LLDB.framework/Resources/Python"
-  }
+  },
+  "markdown.extension.toc.updateOnSave": false
   // "python.linting.mypyEnabled": true,
   // "python.linting.enabled": true,
 }
