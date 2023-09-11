@@ -41,6 +41,7 @@ def parse_args(args: list[str]) -> argparse.Namespace:
     tree_command.add_argument("-l", "--library", action="store_true", help="library directory")
     tree_command.add_argument("--documents", action="store_true", help="documents directory")
     tree_command.add_argument("--tmp", action="store_true", help="tmp directory")
+    tree_command.add_argument("--depth", type=int, help="Maximum depth to be displayed")
 
     open_command = subparsers.add_parser("open",
                                          help="Open directory with Finder (Simulator Only)",
@@ -68,16 +69,24 @@ def tree(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCom
     script_ret = subprocess.run(f"cat {dir_name}/swift/file.swift", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
     script = script_ret.stdout
+
+    depth = 'nil'
+    if args.depth is not None:
+        try:
+            depth = str(int(args.depth))
+        except ValueError:
+            pass
+
     if args.bundle:
-        script += "listFilesInDirectory(Bundle.main.bundleURL)"
+        script += f"listFilesInDirectory(Bundle.main.bundleURL, depth: {depth})"
     elif args.library:
-        script += "listFilesInDirectory(FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first!)"
+        script += f"listFilesInDirectory(FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first!, depth: {depth})"
     elif args.documents:
-        script += "listFilesInDirectory(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!)"
+        script += f"listFilesInDirectory(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!, depth: {depth})"
     elif args.tmp:
-        script += "listFilesInDirectory(FileManager.default.temporaryDirectory)"
+        script += f"listFilesInDirectory(FileManager.default.temporaryDirectory, depth: {depth})"
     elif args.path:
-        script += f"listFilesInDirectory(URL(fileURLWithPath: {args.path}))"
+        script += f"listFilesInDirectory(URL(fileURLWithPath: {args.path}), depth: {depth})"
 
     _ = util.exp_script(
         debugger,
