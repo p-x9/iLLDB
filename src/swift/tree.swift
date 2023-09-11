@@ -99,3 +99,37 @@ func viewHierarchy(_ view: UIView?, indentation: String = "", isLast: Bool = tru
         viewHierarchy(subview, indentation: indentation + (isLast ? "   " : "│  "), isLast: isLastSubview, mode: mode, depth: depth)
     }
 }
+
+
+func layerHierarchy(_ layer: CALayer?, indentation: String = "", isLast: Bool = true, mode: String = "normal", depth: Int? = nil) {
+    guard let layer = layer else { return }
+
+    let currentDepth = indentation.replacingOccurrences(of: "│", with: " ").count / 3
+    if let depth, currentDepth > depth {
+        return
+    }
+
+    var result = ""
+    if isLast {
+        result += "\(indentation)└─"
+    } else {
+        result += "\(indentation)├─"
+    }
+
+    let layerDescription: String
+    switch mode {
+        case "simple": layerDescription = "\(String(describing: type(of: layer)))"
+        case "detail": layerDescription = "\(layer)"
+        default: layerDescription = "\(String(describing: type(of: layer))) \(layer.frame)"
+    }
+
+    result += layerDescription
+
+    print(result)
+
+    guard let sublayers = layer.sublayers else { return }
+    for (index, sublayer) in sublayers.enumerated() {
+        let isLastSublayer = index == sublayers.count - 1
+        layerHierarchy(sublayer, indentation: indentation + (isLast ? "   " : "│  "), isLast: isLastSublayer, mode: mode, depth: depth)
+    }
+}

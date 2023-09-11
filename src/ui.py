@@ -39,6 +39,7 @@ def parse_args(args: list[str]) -> argparse.Namespace:
     tree_command.add_argument("--window", type=str, help="Specify the target window")
     tree_command.add_argument("--view", type=str, help="Specify the target view")
     tree_command.add_argument("--vc", type=str, help="Specify the target viewController")
+    tree_command.add_argument("--layer", type=str, help="Specify the target CALayer")
 
     return parser.parse_args(args)
 
@@ -69,6 +70,8 @@ def tree(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCom
         script += f"\n viewHierarchy({args.view}, mode: \"{mode}\", depth: {depth})"
     elif args.vc:
         script += f"\n viewControllerHierarchy({args.vc}, mode: \"{mode}\", depth: {depth})"
+    elif args.layer:
+        script += f"\n layerHierarchy({args.layer}, mode: \"{mode}\", depth: {depth})"
     else:
         script += f"\n windowHierarchy(UIApplication.shared.keyWindow, mode: \"{mode}\", depth: {depth})"
 
