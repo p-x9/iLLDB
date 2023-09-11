@@ -37,6 +37,7 @@ usage:  tree
        [--window WINDOW]
        [--view VIEW]
        [--vc VC]
+       [--layer LAYER]
 
 optional arguments:
   -h, --help
@@ -53,6 +54,8 @@ optional arguments:
     Specify the target view (default: None)
   --vc VC
     Specify the target viewController (default: None)
+  --layer LAYER
+    Specify the target CALayer (default: None)
 ```
 
 #### Example
@@ -85,6 +88,11 @@ optional arguments:
 - Show the hierarchy of a specific window
     ```
     ui tree -window {property name of window}
+    ```
+
+- Show the hierarchy of a specific layer
+    ```
+    ui tree -layer {property name of layer}
     ```
 
 ### UserDefaults
