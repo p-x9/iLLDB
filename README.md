@@ -33,9 +33,11 @@ usage:  tree
        [-h]
        [-d]
        [-s]
+       [--depth DEPTH]
        [--window WINDOW]
        [--view VIEW]
        [--vc VC]
+
 optional arguments:
   -h, --help
     show this help message and exit
@@ -43,6 +45,8 @@ optional arguments:
     Enable detailed mode (default: False)
   -s, --simple
     Enable simpled mode (default: False)
+  --depth DEPTH
+    Maximum depth to be displayed (default: None)
   --window WINDOW
     Specify the target window (default: None)
   --view VIEW
