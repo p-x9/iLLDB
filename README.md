@@ -162,18 +162,25 @@ app info
 (lldb) file tree -h
 usage:  tree
        [-h]
+       [-b]
        [-l]
        [--documents]
-       [--tmp TMP]
+       [--tmp]
+       [--depth DEPTH]
+
 optional arguments:
   -h, --help
     show this help message and exit
+  -b, --bundle
+    bundle directory (default: False)
   -l, --library
     library directory (default: False)
   --documents
     documents directory (default: False)
-  --tmp TMP
-    tmp directory (default: None)
+  --tmp
+    tmp directory (default: False)
+  --depth DEPTH
+    Maximum depth to be displayed (default: None)
 ```
 
 #### Example
