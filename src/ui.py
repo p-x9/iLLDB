@@ -34,6 +34,8 @@ def parse_args(args: list[str]) -> argparse.Namespace:
                                          formatter_class=util.HelpFormatter)
     tree_command.add_argument("-d", "--detail", action="store_true", help="Enable detailed mode")
     tree_command.add_argument("-s", "--simple", action="store_true", help="Enable simpled mode")
+    tree_command.add_argument("--depth", type=int, help="Maximum depth to be displayed")
+
     tree_command.add_argument("--window", type=str, help="Specify the target window")
     tree_command.add_argument("--view", type=str, help="Specify the target view")
     tree_command.add_argument("--vc", type=str, help="Specify the target viewController")
@@ -53,15 +55,22 @@ def tree(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCom
     if args.simple:
         mode = 'simple'
 
+    depth = 'nil'
+    if args.depth is not None:
+        try:
+            depth = str(int(args.depth))
+        except ValueError:
+            pass
+
     script = script_ret.stdout
     if args.window:
-        script += f"\n windowHierarchy({args.window}, mode: \"{mode}\")"
+        script += f"\n windowHierarchy({args.window}, mode: \"{mode}\", depth: {depth})"
     elif args.view:
-        script += f"\n viewHierarchy({args.view}, imode: \"{mode}\")"
+        script += f"\n viewHierarchy({args.view}, mode: \"{mode}\", depth: {depth})"
     elif args.vc:
-        script += f"\n viewControllerHierarchy({args.vc}, mode: \"{mode}\")"
+        script += f"\n viewControllerHierarchy({args.vc}, mode: \"{mode}\", depth: {depth})"
     else:
-        script += f"\n windowHierarchy(UIApplication.shared.keyWindow, mode: \"{mode}\")"
+        script += f"\n windowHierarchy(UIApplication.shared.keyWindow, mode: \"{mode}\", depth: {depth})"
 
     _ = util.exp_script(
         debugger,

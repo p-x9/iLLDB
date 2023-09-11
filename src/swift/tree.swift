@@ -1,7 +1,12 @@
 import UIKit
 
-func windowHierarchy(_ window: UIWindow?, indentation: String = "", isLast: Bool = true, mode: String = "normal") {
+func windowHierarchy(_ window: UIWindow?, indentation: String = "", isLast: Bool = true, mode: String = "normal", depth: Int? = nil) {
     guard let window = window else { return }
+
+    let currentDepth = indentation.replacingOccurrences(of: "│", with: " ").count / 3
+    if let depth, currentDepth > depth {
+        return
+    }
 
     var result = ""
     if isLast {
@@ -21,12 +26,17 @@ func windowHierarchy(_ window: UIWindow?, indentation: String = "", isLast: Bool
     print(result)
 
     if let rootViewController = window.rootViewController {
-        viewControllerHierarchy(rootViewController, indentation: indentation + (isLast ? "   " : "│  "), isLast: true, mode: mode)
+        viewControllerHierarchy(rootViewController, indentation: indentation + (isLast ? "   " : "│  "), isLast: true, mode: mode, depth: depth)
     }
 }
 
-func viewControllerHierarchy(_ viewController: UIViewController?, indentation: String = "", isLast: Bool = true, mode: String = "normal") {
+func viewControllerHierarchy(_ viewController: UIViewController?, indentation: String = "", isLast: Bool = true, mode: String = "normal", depth: Int? = nil) {
     guard let viewController = viewController else { return }
+
+    let currentDepth = indentation.replacingOccurrences(of: "│", with: " ").count / 3
+    if let depth, currentDepth > depth {
+        return
+    }
 
     var result = ""
     if isLast {
@@ -48,18 +58,23 @@ func viewControllerHierarchy(_ viewController: UIViewController?, indentation: S
 
     let children = viewController.children
     for (index, childViewController) in children.enumerated() {
-        let isLastChild = index == children.count - 1
-        viewControllerHierarchy(childViewController, indentation: indentation + (isLast ? "   " : "│  "), isLast: isLastChild, mode: mode)
+        let isLastChild = index == children.count - 1 && viewController.view.subviews.isEmpty
+        viewControllerHierarchy(childViewController, indentation: indentation + (isLast ? "   " : "│  "), isLast: isLastChild, mode: mode, depth: depth)
     }
 
     for (index, subview) in viewController.view.subviews.enumerated() {
         let isLastSubview = index == viewController.view.subviews.count - 1
-        viewHierarchy(subview, indentation: indentation + (isLast ? "   " : "│  "), isLast: isLastSubview, mode: mode)
+        viewHierarchy(subview, indentation: indentation + (isLast ? "   " : "│  "), isLast: isLastSubview, mode: mode, depth: depth)
     }
 }
 
-func viewHierarchy(_ view: UIView?, indentation: String = "", isLast: Bool = true, mode: String = "normal") {
+func viewHierarchy(_ view: UIView?, indentation: String = "", isLast: Bool = true, mode: String = "normal", depth: Int? = nil) {
     guard let view = view else { return }
+
+    let currentDepth = indentation.replacingOccurrences(of: "│", with: " ").count / 3
+    if let depth, currentDepth > depth {
+        return
+    }
 
     var result = ""
     if isLast {
@@ -81,6 +96,6 @@ func viewHierarchy(_ view: UIView?, indentation: String = "", isLast: Bool = tru
 
     for (index, subview) in view.subviews.enumerated() {
         let isLastSubview = index == view.subviews.count - 1
-        viewHierarchy(subview, indentation: indentation + (isLast ? "   " : "│  "), isLast: isLastSubview, mode: mode)
+        viewHierarchy(subview, indentation: indentation + (isLast ? "   " : "│  "), isLast: isLastSubview, mode: mode, depth: depth)
     }
 }
