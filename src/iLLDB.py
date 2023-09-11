@@ -1,7 +1,7 @@
 import lldb
 import os
 
-iLLDB_VERSION = "0.1.0"
+iLLDB_VERSION = "0.2.0"
 
 
 def __lldb_init_module(debugger: lldb.SBDebugger, internal_dict: dict) -> None:
