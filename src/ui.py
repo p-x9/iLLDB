@@ -47,18 +47,21 @@ def tree(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCom
 
     script_ret = subprocess.run(f"cat {dir_name}/swift/tree.swift", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
-    isDetail = "true" if args.detail is True else "false"
-    isSimple = "true" if args.simple is True else "false"
+    mode = 'normal'
+    if args.detail:
+        mode = 'detail'
+    if args.simple:
+        mode = 'simple'
 
     script = script_ret.stdout
     if args.window:
-        script += f"\n windowHierarchy({args.window}, isSimple: {isSimple}, isDetail: {isDetail})"
+        script += f"\n windowHierarchy({args.window}, mode: \"{mode}\")"
     elif args.view:
-        script += f"\n viewHierarchy({args.view}, isSimple: {isSimple}, isDetail: {isDetail})"
+        script += f"\n viewHierarchy({args.view}, imode: \"{mode}\")"
     elif args.vc:
-        script += f"\n viewControllerHierarchy({args.vc}, isSimple: {isSimple}, isDetail: {isDetail})"
+        script += f"\n viewControllerHierarchy({args.vc}, mode: \"{mode}\")"
     else:
-        script += f"\n windowHierarchy(UIApplication.shared.keyWindow, isSimple: {isSimple}, isDetail: {isDetail})"
+        script += f"\n windowHierarchy(UIApplication.shared.keyWindow, mode: \"{mode}\")"
 
     _ = util.exp_script(
         debugger,
