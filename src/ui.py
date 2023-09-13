@@ -63,7 +63,26 @@ def tree(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCom
         except ValueError:
             pass
 
-    script = script_ret.stdout
+    script = ''
+
+    if util.isUIKit(debugger):
+        script += """
+        import UIKit
+        typealias NSUIView = UIView
+        typealias NSUIViewController = UIViewController
+        typealias NSUIWindow = UIWindow
+        typealias NSUIApplication = UIApplication
+        """
+    elif util.isAppKit(debugger):
+        script += """
+        import AppKit
+        typealias NSUIView = NSView
+        typealias NSUIViewController = NSViewController
+        typealias NSUIWindow = NSWindow
+        typealias NSUIApplication = NSApplication
+        """
+
+    script += script_ret.stdout
     if args.window:
         script += f"\n windowHierarchy({args.window}, mode: \"{mode}\", depth: {depth})"
     elif args.view:
@@ -73,7 +92,7 @@ def tree(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCom
     elif args.layer:
         script += f"\n layerHierarchy({args.layer}, mode: \"{mode}\", depth: {depth})"
     else:
-        script += f"\n windowHierarchy(UIApplication.shared.keyWindow, mode: \"{mode}\", depth: {depth})"
+        script += f"\n windowHierarchy(NSUIApplication.shared.keyWindow, mode: \"{mode}\", depth: {depth})"
 
     _ = util.exp_script(
         debugger,
