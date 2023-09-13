@@ -95,7 +95,7 @@ def tree(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCom
 
 
 def open(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCommandReturnObject) -> None:
-    if not (util.isIOSSimulator(debugger) or util.isAppKit(debugger)):
+    if not (util.isIOSSimulator(debugger) or util.isMacOS(debugger)):
         print("Supported only simulator or macOS")
         return
 
