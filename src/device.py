@@ -40,7 +40,12 @@ def info(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCom
     file_path = os.path.realpath(__file__)
     dir_name = os.path.dirname(file_path)
 
-    script_ret = subprocess.run(f"cat {dir_name}/swift/device.swift", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    swift_file_name = "deviceMacOS" if util.isAppKit(debugger) else "deviceIOS"
+
+    script_ret = subprocess.run(f"cat {dir_name}/swift/{swift_file_name}.swift",
+                                shell=True,
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                text=True)
 
     script = script_ret.stdout
     script += """
