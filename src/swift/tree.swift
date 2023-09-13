@@ -1,6 +1,10 @@
-import UIKit
+// import UIKit
+// typealias NSUIView = UIView
+// typealias NSUIViewController = UIViewController
+// typealias NSUIWindow = UIWindow
+// typealias NSUIApplication = UIApplication
 
-func windowHierarchy(_ window: UIWindow?, indentation: String = "", isLast: Bool = true, mode: String = "normal", depth: Int? = nil) {
+func windowHierarchy(_ window: NSUIWindow?, indentation: String = "", isLast: Bool = true, mode: String = "normal", depth: Int? = nil) {
     guard let window = window else { return }
 
     let currentDepth = indentation.replacingOccurrences(of: "│", with: " ").count / 3
@@ -25,12 +29,17 @@ func windowHierarchy(_ window: UIWindow?, indentation: String = "", isLast: Bool
     result += windowDescription
     print(result)
 
-    if let rootViewController = window.rootViewController {
-        viewControllerHierarchy(rootViewController, indentation: indentation + (isLast ? "   " : "│  "), isLast: true, mode: mode, depth: depth)
+    var rootViewController: NSUIViewController?
+    if window.responds(to: Selector(("rootViewController"))) { // for iOS
+        rootViewController = window.perform(Selector(("rootViewController"))).takeUnretainedValue() as? NSUIViewController
+    } else if window.responds(to: Selector(("contentViewController"))) { // for macOS
+        rootViewController = window.perform(Selector(("contentViewController"))).takeUnretainedValue() as? NSUIViewController
     }
+
+    viewControllerHierarchy(rootViewController, indentation: indentation + (isLast ? "   " : "│  "), isLast: true, mode: mode, depth: depth)
 }
 
-func viewControllerHierarchy(_ viewController: UIViewController?, indentation: String = "", isLast: Bool = true, mode: String = "normal", depth: Int? = nil) {
+func viewControllerHierarchy(_ viewController: NSUIViewController?, indentation: String = "", isLast: Bool = true, mode: String = "normal", depth: Int? = nil) {
     guard let viewController = viewController else { return }
 
     let currentDepth = indentation.replacingOccurrences(of: "│", with: " ").count / 3
@@ -68,7 +77,7 @@ func viewControllerHierarchy(_ viewController: UIViewController?, indentation: S
     }
 }
 
-func viewHierarchy(_ view: UIView?, indentation: String = "", isLast: Bool = true, mode: String = "normal", depth: Int? = nil) {
+func viewHierarchy(_ view: NSUIView?, indentation: String = "", isLast: Bool = true, mode: String = "normal", depth: Int? = nil) {
     guard let view = view else { return }
 
     let currentDepth = indentation.replacingOccurrences(of: "│", with: " ").count / 3

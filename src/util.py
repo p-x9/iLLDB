@@ -1,6 +1,6 @@
 import lldb
 import argparse
-from typing import Optional
+from typing import Optional, cast
 
 
 def exp_script(
@@ -23,7 +23,7 @@ def exp_script(
     options.SetIgnoreBreakpoints(True)
     options.SetTrapExceptions(False)
     options.SetTryAllThreads(True)
-    options.SetFetchDynamicValue(lldb.eDynamicCanRunTarget)
+    options.SetFetchDynamicValue(lldb.eNoDynamicValues)
     options.SetUnwindOnError(True)
     options.SetGenerateDebugInfo(True)
 
@@ -49,6 +49,70 @@ def isIOSSimulator(debugger: lldb.SBDebugger) -> bool:
         return result != "<nil>"
     else:
         return False
+
+
+def isAppKit(debugger: lldb.SBDebugger) -> bool:
+    script = """
+    @import Foundation;
+    Class app = NSClassFromString(@"NSApplication");
+    BOOL val = (BOOL)(app != nil)
+    val ? @"YES" : @"NO";
+    """
+    ret = exp_script(debugger, script, lang=lldb.eLanguageTypeObjC)
+
+    if ret and ret.GetObjectDescription() == 'YES':
+        return True
+    else:
+        return False
+
+
+def isUIKit(debugger: lldb.SBDebugger) -> bool:
+    script = """
+    @import Foundation;
+    Class app = NSClassFromString(@"UIApplication");
+    BOOL val = (BOOL)(app != nil)
+    val ? @"YES" : @"NO";
+    """
+    ret = exp_script(debugger, script, lang=lldb.eLanguageTypeObjC)
+    if ret and ret.GetObjectDescription() == 'YES':
+        return True
+    else:
+        return False
+
+
+def isMacOS(debugger: lldb.SBDebugger) -> bool:
+    model = sysctlbyname(debugger, "hw.model")
+    if model:
+        return 'Mac' in model and not isIOSSimulator(debugger)
+    else:
+        return isAppKit(debugger)
+
+
+def isIOS(debugger: lldb.SBDebugger) -> bool:
+    machine = sysctlbyname(debugger, "hw.machine")
+    if machine:
+        return 'iP' in machine or isIOSSimulator(debugger)
+    else:
+        return isUIKit(debugger)
+
+
+def sysctlbyname(debugger: lldb.SBDebugger, key: str) -> Optional[str]:
+    script = """
+    size_t size = 0;
+    sysctlbyname([name UTF8String], NULL, &size, NULL, 0);
+    char *machine = (char *)malloc(size);
+    sysctlbyname([name UTF8String], machine, &size, NULL, 0);
+
+    NSString *result = [NSString stringWithUTF8String:machine];
+    free(machine);
+    result;
+    """
+
+    ret = exp_script(debugger, script, lang=lldb.eLanguageTypeObjC)
+    if ret:
+        return cast(str, ret.GetObjectDescription())
+    else:
+        return None
 
 
 class HelpFormatter(argparse.RawTextHelpFormatter, argparse.ArgumentDefaultsHelpFormatter):

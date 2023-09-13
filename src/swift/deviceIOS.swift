@@ -9,6 +9,6 @@ func printDeviceInfo() {
     print("System Name:       \(currentDevice.systemName)")
     print("System Version:    \(currentDevice.systemVersion)")
     if let identifierForVendor = currentDevice.identifierForVendor {
-        print("Identifier (UDID): \(identifierForVendor.uuidString)")
+        print("Id For Vendor:     \(identifierForVendor.uuidString)")
     }
 }
