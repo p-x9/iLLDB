@@ -1,8 +1,6 @@
 import lldb
 import shlex
 import argparse
-import subprocess
-import os
 from typing import Union, cast
 import util
 
@@ -45,11 +43,6 @@ def parse_args(args: list[str]) -> argparse.Namespace:
 
 
 def tree(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCommandReturnObject) -> None:
-    file_path = os.path.realpath(__file__)
-    dir_name = os.path.dirname(file_path)
-
-    script_ret = subprocess.run(f"cat {dir_name}/swift/tree.swift", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-
     mode = 'normal'
     if args.detail:
         mode = 'detail'
@@ -82,7 +75,7 @@ def tree(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCom
         typealias NSUIApplication = NSApplication
         """
 
-    script += script_ret.stdout
+    script += util.read_script_file('swift/tree.swift')
     if args.window:
         script += f"\n windowHierarchy({args.window}, mode: \"{mode}\", depth: {depth})"
     elif args.view:

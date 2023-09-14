@@ -1,3 +1,4 @@
+import os
 import lldb
 import argparse
 from typing import Optional, cast
@@ -35,6 +36,17 @@ def exp_script(
     else:
         print(error)
         return None
+
+
+def read_script_file(file_name: str) -> str:
+    file_path = os.path.realpath(__file__)
+    dir_name = os.path.dirname(file_path)
+
+    file = open(f'{dir_name}/{file_name}', mode='r')
+    text = file.read()
+    file.close()
+
+    return text
 
 
 def isIOSSimulator(debugger: lldb.SBDebugger) -> bool:
