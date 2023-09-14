@@ -97,11 +97,14 @@ def isIOS(debugger: lldb.SBDebugger) -> bool:
 
 
 def sysctlbyname(debugger: lldb.SBDebugger, key: str) -> Optional[str]:
-    script = """
+    script = f"""
+    @import Foundation;
+    int sysctlbyname(const char *, void *, size_t *, void *, size_t);
+
     size_t size = 0;
-    sysctlbyname([name UTF8String], NULL, &size, NULL, 0);
+    sysctlbyname("{key}", NULL, &size, NULL, 0);
     char *machine = (char *)malloc(size);
-    sysctlbyname([name UTF8String], machine, &size, NULL, 0);
+    sysctlbyname("{key}", machine, &size, NULL, 0);
 
     NSString *result = [NSString stringWithUTF8String:machine];
     free(machine);
