@@ -1,8 +1,6 @@
 import lldb
 import shlex
 import argparse
-import subprocess
-import os
 from typing import Union, cast
 import util
 
@@ -37,17 +35,9 @@ def parse_args(args: list[str]) -> argparse.Namespace:
 
 
 def info(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCommandReturnObject) -> None:
-    file_path = os.path.realpath(__file__)
-    dir_name = os.path.dirname(file_path)
-
     swift_file_name = "deviceMacOS" if util.isAppKit(debugger) else "deviceIOS"
 
-    script_ret = subprocess.run(f"cat {dir_name}/swift/{swift_file_name}.swift",
-                                shell=True,
-                                stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                text=True)
-
-    script = script_ret.stdout
+    script = util.read_script_file(f'swift/{swift_file_name}.swift')
     script += """
     printDeviceInfo()
     """

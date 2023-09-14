@@ -2,7 +2,6 @@ import lldb
 import shlex
 import argparse
 import subprocess
-import os
 from typing import Union, cast
 import util
 
@@ -63,12 +62,7 @@ def parse_args(args: list[str]) -> argparse.Namespace:
 
 
 def tree(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCommandReturnObject) -> None:
-    file_path = os.path.realpath(__file__)
-    dir_name = os.path.dirname(file_path)
-
-    script_ret = subprocess.run(f"cat {dir_name}/swift/file.swift", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-
-    script = script_ret.stdout
+    script = util.read_script_file('swift/file.swift')
 
     depth = 'nil'
     if args.depth is not None:
@@ -123,12 +117,7 @@ def open(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCom
 
 
 def cat(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCommandReturnObject) -> None:
-    file_path = os.path.realpath(__file__)
-    dir_name = os.path.dirname(file_path)
-
-    script_ret = subprocess.run(f"cat {dir_name}/objc/cat.m", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-
-    script = script_ret.stdout
+    script = util.read_script_file('objc/cat.m')
     script = script.replace("<FILE_PATH>", args.path)
     script = script.replace("<MODE>", args.mode)
 
