@@ -21,9 +21,20 @@ func windowHierarchy(_ window: NSUIWindow?, indentation: String = "", isLast: Bo
 
     let windowDescription: String
     switch mode {
-        case "simple": windowDescription = "\(String(describing: type(of: window)))"
-        case "detail": windowDescription = "\(window)"
-        default: windowDescription = "\(String(describing: type(of: window))) \(window.frame)"
+    case "simple": windowDescription = "\(String(describing: type(of: window)))"
+    case "detail": windowDescription = "\(window)"
+    default:
+        let frame = window.frame
+        let frameDescription = String(
+            format: "(%.1f, %.1f, %.1f, %.1f)",
+            arguments: [
+                frame.x,
+                frame.y,
+                frame.width,
+                frame.height
+            ]
+        )
+        windowDescription = "\(String(describing: type(of: window))) \(frameDescription)"
     }
 
     result += windowDescription
@@ -56,9 +67,20 @@ func viewControllerHierarchy(_ viewController: NSUIViewController?, indentation:
 
     let viewControllerDescription: String
     switch mode {
-        case "simple": viewControllerDescription = "\(String(describing: type(of: viewController)))"
-        case "detail": viewControllerDescription = "\(viewController)"
-        default: viewControllerDescription = "\(String(describing: type(of: viewController))) \(viewController.view.frame))"
+    case "simple": viewControllerDescription = "\(String(describing: type(of: viewController)))"
+    case "detail": viewControllerDescription = "\(viewController)"
+    default:
+        let frame = viewController.view.frame
+        let frameDescription = String(
+            format: "(%.1f, %.1f, %.1f, %.1f)",
+            arguments: [
+                frame.x,
+                frame.y,
+                frame.width,
+                frame.height
+            ]
+        )
+        viewControllerDescription = "\(String(describing: type(of: viewController))) \(frameDescription))"
     }
 
     result += viewControllerDescription
@@ -94,9 +116,20 @@ func viewHierarchy(_ view: NSUIView?, indentation: String = "", isLast: Bool = t
 
     let viewDescription: String
     switch mode {
-        case "simple": viewDescription = "\(String(describing: type(of: view)))"
-        case "detail": viewDescription = "\(view)"
-        default: viewDescription = "\(String(describing: type(of: view))) \(view.frame)"
+    case "simple": viewDescription = "\(String(describing: type(of: view)))"
+    case "detail": viewDescription = "\(view)"
+    default:
+        let frame = view.frame
+        let frameDescription = String(
+            format: "(%.1f, %.1f, %.1f, %.1f)",
+            arguments: [
+                frame.x,
+                frame.y,
+                frame.width,
+                frame.height
+            ]
+        )
+        viewDescription = "\(String(describing: type(of: view))) \(frameDescription)"
     }
 
     result += viewDescription
@@ -108,7 +141,6 @@ func viewHierarchy(_ view: NSUIView?, indentation: String = "", isLast: Bool = t
         viewHierarchy(subview, indentation: indentation + (isLast ? "   " : "│  "), isLast: isLastSubview, mode: mode, depth: depth)
     }
 }
-
 
 func layerHierarchy(_ layer: CALayer?, indentation: String = "", isLast: Bool = true, mode: String = "normal", depth: Int? = nil) {
     guard let layer = layer else { return }
@@ -127,9 +159,20 @@ func layerHierarchy(_ layer: CALayer?, indentation: String = "", isLast: Bool = 
 
     let layerDescription: String
     switch mode {
-        case "simple": layerDescription = "\(String(describing: type(of: layer)))"
-        case "detail": layerDescription = "\(layer)"
-        default: layerDescription = "\(String(describing: type(of: layer))) \(layer.frame)"
+    case "simple": layerDescription = "\(String(describing: type(of: layer)))"
+    case "detail": layerDescription = "\(layer)"
+    default:
+        let frame = layer.frame
+        let frameDescription = String(
+            format: "(%.1f, %.1f, %.1f, %.1f)",
+            arguments: [
+                frame.x,
+                frame.y,
+                frame.width,
+                frame.height
+            ]
+        )
+        layerDescription = "\(String(describing: type(of: layer))) \(frameDescription)"
     }
 
     result += layerDescription
