@@ -24,16 +24,7 @@ func windowHierarchy(_ window: NSUIWindow?, indentation: String = "", isLast: Bo
     case "simple": windowDescription = "\(String(describing: type(of: window)))"
     case "detail": windowDescription = "\(window)"
     default:
-        let frame = window.frame
-        let frameDescription = String(
-            format: "(%.1f, %.1f, %.1f, %.1f)",
-            arguments: [
-                frame.x,
-                frame.y,
-                frame.width,
-                frame.height
-            ]
-        )
+        let frameDescription = frameDescription(window.frame)
         windowDescription = "\(String(describing: type(of: window))) \(frameDescription)"
     }
 
@@ -70,16 +61,7 @@ func viewControllerHierarchy(_ viewController: NSUIViewController?, indentation:
     case "simple": viewControllerDescription = "\(String(describing: type(of: viewController)))"
     case "detail": viewControllerDescription = "\(viewController)"
     default:
-        let frame = viewController.view.frame
-        let frameDescription = String(
-            format: "(%.1f, %.1f, %.1f, %.1f)",
-            arguments: [
-                frame.x,
-                frame.y,
-                frame.width,
-                frame.height
-            ]
-        )
+        let frameDescription = frameDescription(viewController.view.frame)
         viewControllerDescription = "\(String(describing: type(of: viewController))) \(frameDescription))"
     }
 
@@ -119,16 +101,7 @@ func viewHierarchy(_ view: NSUIView?, indentation: String = "", isLast: Bool = t
     case "simple": viewDescription = "\(String(describing: type(of: view)))"
     case "detail": viewDescription = "\(view)"
     default:
-        let frame = view.frame
-        let frameDescription = String(
-            format: "(%.1f, %.1f, %.1f, %.1f)",
-            arguments: [
-                frame.x,
-                frame.y,
-                frame.width,
-                frame.height
-            ]
-        )
+        let frameDescription = frameDescription(view.frame)
         viewDescription = "\(String(describing: type(of: view))) \(frameDescription)"
     }
 
@@ -162,16 +135,7 @@ func layerHierarchy(_ layer: CALayer?, indentation: String = "", isLast: Bool = 
     case "simple": layerDescription = "\(String(describing: type(of: layer)))"
     case "detail": layerDescription = "\(layer)"
     default:
-        let frame = layer.frame
-        let frameDescription = String(
-            format: "(%.1f, %.1f, %.1f, %.1f)",
-            arguments: [
-                frame.x,
-                frame.y,
-                frame.width,
-                frame.height
-            ]
-        )
+        let frameDescription = frameDescription(layer.frame)
         layerDescription = "\(String(describing: type(of: layer))) \(frameDescription)"
     }
 
@@ -184,4 +148,16 @@ func layerHierarchy(_ layer: CALayer?, indentation: String = "", isLast: Bool = 
         let isLastSublayer = index == sublayers.count - 1
         layerHierarchy(sublayer, indentation: indentation + (isLast ? "   " : "│  "), isLast: isLastSublayer, mode: mode, depth: depth)
     }
+}
+
+func frameDescription(_ frame: CGRect) -> String {
+    String(
+        format: "(%.1f, %.1f, %.1f, %.1f)",
+        arguments: [
+            frame.x,
+            frame.y,
+            frame.width,
+            frame.height
+        ]
+    )
 }
