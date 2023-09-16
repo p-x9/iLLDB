@@ -34,6 +34,7 @@ usage:  tree
        [-d]
        [-s]
        [--depth DEPTH]
+       [--with-address]
        [--window WINDOW]
        [--view VIEW]
        [--vc VC]
@@ -48,6 +49,8 @@ optional arguments:
     Enable simpled mode (default: False)
   --depth DEPTH
     Maximum depth to be displayed (default: None)
+  --with-address
+    Print address of ui (default: False)
   --window WINDOW
     Specify the target window (default: None)
   --view VIEW
