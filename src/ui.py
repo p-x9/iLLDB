@@ -36,9 +36,9 @@ def parse_args(args: list[str]) -> argparse.Namespace:
     tree_command.add_argument("--with-address", action="store_true", help="Print address of ui")
 
     tree_command.add_argument("--window", type=str, help="Specify the target window")
-    tree_command.add_argument("--view", type=str, help="Specify the target view")
-    tree_command.add_argument("--vc", type=str, help="Specify the target viewController")
-    tree_command.add_argument("--layer", type=str, help="Specify the target CALayer")
+    tree_command.add_argument("--view", type=str, help="Specify the target view (property or address)")
+    tree_command.add_argument("--vc", type=str, help="Specify the target viewController (property or address)")
+    tree_command.add_argument("--layer", type=str, help="Specify the target CALayer (property or address)")
 
     return parser.parse_args(args)
 
@@ -78,14 +78,16 @@ def tree(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCom
         typealias NSUIApplication = NSApplication
         """
 
+    resolve_adress(args)
+
     script += util.read_script_file('swift/tree.swift')
-    if args.window:
+    if args.window is not None:
         script += f"\n windowHierarchy({args.window}, mode: \"{mode}\", depth: {depth}, address: {with_address})"
-    elif args.view:
+    elif args.view is not None:
         script += f"\n viewHierarchy({args.view}, mode: \"{mode}\", depth: {depth}, address: {with_address})"
-    elif args.vc:
+    elif args.vc is not None:
         script += f"\n viewControllerHierarchy({args.vc}, mode: \"{mode}\", depth: {depth}, address: {with_address})"
-    elif args.layer:
+    elif args.layer is not None:
         script += f"\n layerHierarchy({args.layer}, mode: \"{mode}\", depth: {depth}, address: {with_address})"
     else:
         script += f"\n windowHierarchy(NSUIApplication.shared.keyWindow, mode: \"{mode}\", depth: {depth}, address: {with_address})"
@@ -94,3 +96,17 @@ def tree(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCom
         debugger,
         script
     )
+
+
+def resolve_adress(args: argparse.Namespace):
+    try:
+        if args.window is not None:
+            args.window = f"Unmanaged<NSUIWindow>.fromOpaque(.init(bitPattern: {args.window})!).takeUnretainedValue()"
+        elif args.view is not None:
+            args.view = f"Unmanaged<NSUIView>.fromOpaque(.init(bitPattern: {args.view})!).takeUnretainedValue()"
+        elif args.vc is not None:
+            args.vc = f"Unmanaged<NSUIViewController>.fromOpaque(.init(bitPattern: {args.vc})!).takeUnretainedValue()"
+        elif args.layer is not None:
+            args.layer = f"Unmanaged<CALayer>.fromOpaque(.init(bitPattern: {args.layer})!).takeUnretainedValue()"
+    except ValueError:
+        pass

@@ -54,11 +54,11 @@ optional arguments:
   --window WINDOW
     Specify the target window (default: None)
   --view VIEW
-    Specify the target view (default: None)
+    Specify the target view (property or address) (default: None)
   --vc VC
-    Specify the target viewController (default: None)
+    Specify the target viewController (property or address) (default: None)
   --layer LAYER
-    Specify the target CALayer (default: None)
+    Specify the target CALayer (property or address) (default: None)
 ```
 
 #### Example
