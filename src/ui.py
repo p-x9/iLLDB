@@ -100,13 +100,13 @@ def tree(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCom
 
 def resolve_adress(args: argparse.Namespace):
     try:
-        if args.window is not None:
+        if args.window is not None and int(args.window, 16):
             args.window = f"Unmanaged<NSUIWindow>.fromOpaque(.init(bitPattern: {args.window})!).takeUnretainedValue()"
-        elif args.view is not None:
+        elif args.view is not None and int(args.view, 16):
             args.view = f"Unmanaged<NSUIView>.fromOpaque(.init(bitPattern: {args.view})!).takeUnretainedValue()"
-        elif args.vc is not None:
+        elif args.vc is not None and int(args.vc, 16):
             args.vc = f"Unmanaged<NSUIViewController>.fromOpaque(.init(bitPattern: {args.vc})!).takeUnretainedValue()"
-        elif args.layer is not None:
+        elif args.layer is not None and int(args.layer, 16):
             args.layer = f"Unmanaged<CALayer>.fromOpaque(.init(bitPattern: {args.layer})!).takeUnretainedValue()"
     except ValueError:
         pass
