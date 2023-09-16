@@ -4,7 +4,14 @@
 // typealias NSUIWindow = UIWindow
 // typealias NSUIApplication = UIApplication
 
-func windowHierarchy(_ window: NSUIWindow?, indentation: String = "", isLast: Bool = true, mode: String = "normal", depth: Int? = nil) {
+func windowHierarchy(
+    _ window: NSUIWindow?,
+    indentation: String = "",
+    isLast: Bool = true,
+    mode: String = "normal",
+    depth: Int? = nil,
+    address: Bool = false
+) {
     guard let window = window else { return }
 
     let currentDepth = indentation.replacingOccurrences(of: "│", with: " ").count / 3
@@ -19,23 +26,15 @@ func windowHierarchy(_ window: NSUIWindow?, indentation: String = "", isLast: Bo
         result += "\(indentation)├─"
     }
 
-    let windowDescription: String
+    var windowDescription: String
     switch mode {
     case "simple": windowDescription = "\(String(describing: type(of: window)))"
     case "detail": windowDescription = "\(window)"
     default:
-        let frame = window.frame
-        let frameDescription = String(
-            format: "(%.1f, %.1f, %.1f, %.1f)",
-            arguments: [
-                frame.x,
-                frame.y,
-                frame.width,
-                frame.height
-            ]
-        )
+        let frameDescription = frameDescription(window.frame)
         windowDescription = "\(String(describing: type(of: window))) \(frameDescription)"
     }
+    if address && mode != "detail" { windowDescription += ": \(addressDescription(of: window))" }
 
     result += windowDescription
     print(result)
@@ -47,10 +46,24 @@ func windowHierarchy(_ window: NSUIWindow?, indentation: String = "", isLast: Bo
         rootViewController = window.perform(Selector(("contentViewController"))).takeUnretainedValue() as? NSUIViewController
     }
 
-    viewControllerHierarchy(rootViewController, indentation: indentation + (isLast ? "   " : "│  "), isLast: true, mode: mode, depth: depth)
+    viewControllerHierarchy(
+        rootViewController,
+        indentation: indentation + (isLast ? "   " : "│  "),
+        isLast: true,
+        mode: mode,
+        depth: depth,
+        address: address
+    )
 }
 
-func viewControllerHierarchy(_ viewController: NSUIViewController?, indentation: String = "", isLast: Bool = true, mode: String = "normal", depth: Int? = nil) {
+func viewControllerHierarchy(
+    _ viewController: NSUIViewController?,
+    indentation: String = "",
+    isLast: Bool = true,
+    mode: String = "normal",
+    depth: Int? = nil,
+    address: Bool = false
+) {
     guard let viewController = viewController else { return }
 
     let currentDepth = indentation.replacingOccurrences(of: "│", with: " ").count / 3
@@ -65,23 +78,15 @@ func viewControllerHierarchy(_ viewController: NSUIViewController?, indentation:
         result += "\(indentation)├─"
     }
 
-    let viewControllerDescription: String
+    var viewControllerDescription: String
     switch mode {
     case "simple": viewControllerDescription = "\(String(describing: type(of: viewController)))"
     case "detail": viewControllerDescription = "\(viewController)"
     default:
-        let frame = viewController.view.frame
-        let frameDescription = String(
-            format: "(%.1f, %.1f, %.1f, %.1f)",
-            arguments: [
-                frame.x,
-                frame.y,
-                frame.width,
-                frame.height
-            ]
-        )
+        let frameDescription = frameDescription(viewController.view.frame)
         viewControllerDescription = "\(String(describing: type(of: viewController))) \(frameDescription))"
     }
+    if address && mode != "detail" { viewControllerDescription += ": \(addressDescription(of: viewController))" }
 
     result += viewControllerDescription
 
@@ -90,16 +95,37 @@ func viewControllerHierarchy(_ viewController: NSUIViewController?, indentation:
     let children = viewController.children
     for (index, childViewController) in children.enumerated() {
         let isLastChild = index == children.count - 1 && viewController.view.subviews.isEmpty
-        viewControllerHierarchy(childViewController, indentation: indentation + (isLast ? "   " : "│  "), isLast: isLastChild, mode: mode, depth: depth)
+        viewControllerHierarchy(
+            childViewController,
+            indentation: indentation + (isLast ? "   " : "│  "),
+            isLast: isLastChild,
+            mode: mode,
+            depth: depth,
+            address: address
+        )
     }
 
     for (index, subview) in viewController.view.subviews.enumerated() {
         let isLastSubview = index == viewController.view.subviews.count - 1
-        viewHierarchy(subview, indentation: indentation + (isLast ? "   " : "│  "), isLast: isLastSubview, mode: mode, depth: depth)
+        viewHierarchy(
+            subview,
+            indentation: indentation + (isLast ? "   " : "│  "),
+            isLast: isLastSubview,
+            mode: mode,
+            depth: depth,
+            address: address
+        )
     }
 }
 
-func viewHierarchy(_ view: NSUIView?, indentation: String = "", isLast: Bool = true, mode: String = "normal", depth: Int? = nil) {
+func viewHierarchy(
+    _ view: NSUIView?,
+    indentation: String = "",
+    isLast: Bool = true,
+    mode: String = "normal",
+    depth: Int? = nil,
+    address: Bool = false
+) {
     guard let view = view else { return }
 
     let currentDepth = indentation.replacingOccurrences(of: "│", with: " ").count / 3
@@ -114,23 +140,16 @@ func viewHierarchy(_ view: NSUIView?, indentation: String = "", isLast: Bool = t
         result += "\(indentation)├─"
     }
 
-    let viewDescription: String
+    var viewDescription: String
     switch mode {
-    case "simple": viewDescription = "\(String(describing: type(of: view)))"
+    case "simple":
+        viewDescription = "\(String(describing: type(of: view)))"
     case "detail": viewDescription = "\(view)"
     default:
-        let frame = view.frame
-        let frameDescription = String(
-            format: "(%.1f, %.1f, %.1f, %.1f)",
-            arguments: [
-                frame.x,
-                frame.y,
-                frame.width,
-                frame.height
-            ]
-        )
+        let frameDescription = frameDescription(view.frame)
         viewDescription = "\(String(describing: type(of: view))) \(frameDescription)"
     }
+    if address && mode != "detail" { viewDescription += ": \(addressDescription(of: view))" }
 
     result += viewDescription
 
@@ -138,11 +157,25 @@ func viewHierarchy(_ view: NSUIView?, indentation: String = "", isLast: Bool = t
 
     for (index, subview) in view.subviews.enumerated() {
         let isLastSubview = index == view.subviews.count - 1
-        viewHierarchy(subview, indentation: indentation + (isLast ? "   " : "│  "), isLast: isLastSubview, mode: mode, depth: depth)
+        viewHierarchy(
+            subview,
+            indentation: indentation + (isLast ? "   " : "│  "),
+            isLast: isLastSubview,
+            mode: mode,
+            depth: depth,
+            address: address
+        )
     }
 }
 
-func layerHierarchy(_ layer: CALayer?, indentation: String = "", isLast: Bool = true, mode: String = "normal", depth: Int? = nil) {
+func layerHierarchy(
+    _ layer: CALayer?,
+    indentation: String = "",
+    isLast: Bool = true,
+    mode: String = "normal",
+    depth: Int? = nil,
+    address: Bool = false
+) {
     guard let layer = layer else { return }
 
     let currentDepth = indentation.replacingOccurrences(of: "│", with: " ").count / 3
@@ -157,23 +190,15 @@ func layerHierarchy(_ layer: CALayer?, indentation: String = "", isLast: Bool = 
         result += "\(indentation)├─"
     }
 
-    let layerDescription: String
+    var layerDescription: String
     switch mode {
     case "simple": layerDescription = "\(String(describing: type(of: layer)))"
     case "detail": layerDescription = "\(layer)"
     default:
-        let frame = layer.frame
-        let frameDescription = String(
-            format: "(%.1f, %.1f, %.1f, %.1f)",
-            arguments: [
-                frame.x,
-                frame.y,
-                frame.width,
-                frame.height
-            ]
-        )
+        let frameDescription = frameDescription(layer.frame)
         layerDescription = "\(String(describing: type(of: layer))) \(frameDescription)"
     }
+    if address && mode != "detail" { layerDescription += ": \(addressDescription(of: layer))" }
 
     result += layerDescription
 
@@ -182,6 +207,30 @@ func layerHierarchy(_ layer: CALayer?, indentation: String = "", isLast: Bool = 
     guard let sublayers = layer.sublayers else { return }
     for (index, sublayer) in sublayers.enumerated() {
         let isLastSublayer = index == sublayers.count - 1
-        layerHierarchy(sublayer, indentation: indentation + (isLast ? "   " : "│  "), isLast: isLastSublayer, mode: mode, depth: depth)
+        layerHierarchy(
+            sublayer,
+            indentation: indentation + (isLast ? "   " : "│  "),
+            isLast: isLastSublayer,
+            mode: mode,
+            depth: depth,
+            address: address
+        )
     }
+}
+
+func frameDescription(_ frame: CGRect) -> String {
+    String(
+        format: "(%.1f, %.1f, %.1f, %.1f)",
+        arguments: [
+            frame.minX,
+            frame.minY,
+            frame.width,
+            frame.height
+        ]
+    )
+}
+
+func addressDescription(of object: AnyObject) -> String {
+    let unmanaged = Unmanaged.passUnretained(object)
+    return unmanaged.toOpaque().debugDescription
 }

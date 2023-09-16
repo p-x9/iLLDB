@@ -33,6 +33,7 @@ def parse_args(args: list[str]) -> argparse.Namespace:
     tree_command.add_argument("-d", "--detail", action="store_true", help="Enable detailed mode")
     tree_command.add_argument("-s", "--simple", action="store_true", help="Enable simpled mode")
     tree_command.add_argument("--depth", type=int, help="Maximum depth to be displayed")
+    tree_command.add_argument("--with-address", action="store_true", help="Print address of ui")
 
     tree_command.add_argument("--window", type=str, help="Specify the target window")
     tree_command.add_argument("--view", type=str, help="Specify the target view")
@@ -56,6 +57,8 @@ def tree(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCom
         except ValueError:
             pass
 
+    with_address = 'true' if args.with_address else 'false'
+
     script = ''
 
     if util.isUIKit(debugger):
@@ -77,15 +80,15 @@ def tree(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCom
 
     script += util.read_script_file('swift/tree.swift')
     if args.window:
-        script += f"\n windowHierarchy({args.window}, mode: \"{mode}\", depth: {depth})"
+        script += f"\n windowHierarchy({args.window}, mode: \"{mode}\", depth: {depth}, address: {with_address})"
     elif args.view:
-        script += f"\n viewHierarchy({args.view}, mode: \"{mode}\", depth: {depth})"
+        script += f"\n viewHierarchy({args.view}, mode: \"{mode}\", depth: {depth}, address: {with_address})"
     elif args.vc:
-        script += f"\n viewControllerHierarchy({args.vc}, mode: \"{mode}\", depth: {depth})"
+        script += f"\n viewControllerHierarchy({args.vc}, mode: \"{mode}\", depth: {depth}, address: {with_address})"
     elif args.layer:
-        script += f"\n layerHierarchy({args.layer}, mode: \"{mode}\", depth: {depth})"
+        script += f"\n layerHierarchy({args.layer}, mode: \"{mode}\", depth: {depth}, address: {with_address})"
     else:
-        script += f"\n windowHierarchy(NSUIApplication.shared.keyWindow, mode: \"{mode}\", depth: {depth})"
+        script += f"\n windowHierarchy(NSUIApplication.shared.keyWindow, mode: \"{mode}\", depth: {depth}, address: {with_address})"
 
     _ = util.exp_script(
         debugger,
