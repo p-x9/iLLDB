@@ -98,7 +98,7 @@ def tree(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCom
     )
 
 
-def resolve_adress(args: argparse.Namespace):
+def resolve_adress(args: argparse.Namespace) -> None:
     try:
         if args.window is not None and int(args.window, 16):
             args.window = f"Unmanaged<NSUIWindow>.fromOpaque(.init(bitPattern: {args.window})!).takeUnretainedValue()"
