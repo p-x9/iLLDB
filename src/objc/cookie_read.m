@@ -25,6 +25,7 @@ for (NSHTTPCookie *cookie in allCookies) {
     printf("  Value:   %s\n", (char *)[cookie.value UTF8String]);
     printf("  Domain:  %s\n", (char *)[cookie.domain UTF8String]);
     printf("  Path:    %s\n", (char *)[cookie.path UTF8String]);
+    printf("  Secure:  %s\n", cookie.secure ? "True" : "False");
 
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
