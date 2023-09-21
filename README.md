@@ -16,6 +16,9 @@ LLDB Extension for iOS App Development
 - [Show file hierarchy](#file-hierarchy)
 - [Open directory in Finder (Simulator Only)](#open-directory-in-finder-app-simulator-only)
 - [Show file contents](#show-file-contents)
+- [Easy operation of HTTP Cookie](#http-cookie)
+  - [Show Cookie Values](#read-cookie-value)
+  - [Delete Cookie](#delete-cookie)
 
 ## Set up
 1. clone this repository
@@ -261,6 +264,85 @@ optional arguments:
   ```
   file cat "path" --mode plist
   ```
+
+### HTTP Cookie
+#### Read Cookie Value
+Displays the value of the HTTP cookie information.
+```
+(lldb) cookie read -h
+usage:  read
+       [-h]
+       [--group-id GROUP_ID]
+       [--domain DOMAIN]
+       [--name NAME]
+       [--path PATH]
+optional arguments:
+  -h, --help
+    show this help message and exit
+  --group-id GROUP_ID
+    AppGroup identifier for cookie storage (default: None)
+  --domain DOMAIN
+    Domain for Cookie (default: None)
+  --name NAME
+    Name for Cookie (default: None)
+  --path PATH
+    Path for Cookie (default: None)
+```
+##### Example
+- Show all cookies
+  ```sh
+  cookie read
+  ```
+- Show only cookies for specific domains
+  ```sh
+  cookie read --domain example.com
+  ```
+- Show only cookies with a specific name from a specific domain
+  ```sh
+  cookie read --domain example.com --name KEYNAME
+  ```
+
+#### Delete Cookie
+Delete cookie value.
+
+After executing the command, you will be asked to confirm before deleting.
+If you type "Yes", the deletion will be executed as is.
+
+```
+(lldb) cookie delete -h
+usage:  delete
+       [-h]
+       [--group-id GROUP_ID]
+       [--domain DOMAIN]
+       [--name NAME]
+       [--path PATH]
+optional arguments:
+  -h, --help
+    show this help message and exit
+  --group-id GROUP_ID
+    AppGroup identifier for cookie storage (default: None)
+  --domain DOMAIN
+    Domain for Cookie (default: None)
+  --name NAME
+    Name for Cookie (default: None)
+  --path PATH
+    Path for Cookie (default: None)
+```
+
+##### Example
+- Delete all cookies
+  ```sh
+  cookie delete
+  ```
+- Delete only cookies for specific domains
+  ```sh
+  cookie delete --domain example.com
+  ```
+- Delete only cookies with a specific name from a specific domain
+  ```sh
+  cookie delete --domain example.com --name KEYNAME
+  ```
+
 
 ## License
 iLLDB is released under the MIT License. See [LICENSE](./LICENSE)
