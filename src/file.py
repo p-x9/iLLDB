@@ -110,7 +110,7 @@ def open(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCom
     if script != "":
         ret = util.exp_script(debugger, script)
         if ret:
-            print(ret.GetObjectDescription())
+            print(ret.asStr())
             shell += f"{ret.GetObjectDescription()}"
 
     subprocess.run(shell, shell=True)

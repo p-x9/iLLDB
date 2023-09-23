@@ -1,5 +1,6 @@
 import lldb
 import os
+import LLDBHelper  # noqa: F401
 
 iLLDB_VERSION = "0.6.0"
 
