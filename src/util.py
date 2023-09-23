@@ -1,7 +1,8 @@
 import os
 import lldb
 import argparse
-from typing import Optional, cast
+from typing import Optional
+import LLDBHelper.SBValue  # noqa: F401
 
 
 def exp_script(
@@ -57,8 +58,8 @@ def isIOSSimulator(debugger: lldb.SBDebugger) -> bool:
     """
     ret = exp_script(debugger, script, lang=lldb.eLanguageTypeObjC)
     if ret:
-        result: str = ret.GetObjectDescription()
-        return result != "<nil>"
+        result: Optional[str] = ret.asStr()
+        return result is not None
     else:
         return False
 
@@ -68,12 +69,13 @@ def isAppKit(debugger: lldb.SBDebugger) -> bool:
     @import Foundation;
     Class app = NSClassFromString(@"NSApplication");
     BOOL val = (BOOL)(app != nil)
-    val ? @"YES" : @"NO";
+    val
     """
     ret = exp_script(debugger, script, lang=lldb.eLanguageTypeObjC)
 
-    if ret and ret.GetObjectDescription() == 'YES':
-        return True
+    if ret:
+        result: Optional[bool] = ret.asBool()
+        return False if result is None else result
     else:
         return False
 
@@ -83,11 +85,12 @@ def isUIKit(debugger: lldb.SBDebugger) -> bool:
     @import Foundation;
     Class app = NSClassFromString(@"UIApplication");
     BOOL val = (BOOL)(app != nil)
-    val ? @"YES" : @"NO";
+    val;
     """
     ret = exp_script(debugger, script, lang=lldb.eLanguageTypeObjC)
-    if ret and ret.GetObjectDescription() == 'YES':
-        return True
+    if ret:
+        result: Optional[bool] = ret.asBool()
+        return False if result is None else result
     else:
         return False
 
@@ -125,7 +128,8 @@ def sysctlbyname(debugger: lldb.SBDebugger, key: str) -> Optional[str]:
 
     ret = exp_script(debugger, script, lang=lldb.eLanguageTypeObjC)
     if ret:
-        return cast(str, ret.GetObjectDescription())
+        result: Optional[str] = ret.asStr()
+        return result
     else:
         return None
 

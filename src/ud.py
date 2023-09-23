@@ -20,9 +20,15 @@ def handle_command(
 
     script = ""
     if args.suite:
-        script += "@import Foundation;\nNSUserDefaults *userDefaults = [[NSUserDefaults alloc] initWithSuiteName:suiteName];\n"
+        script += """
+        @import Foundation;
+        NSUserDefaults *userDefaults = [[NSUserDefaults alloc] initWithSuiteName:suiteName];
+        """
     else:
-        script += "@import Foundation;\nNSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];\n"
+        script += """
+        @import Foundation;
+        NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+        """
 
     if args.subcommand == "read":
         key = args.key
