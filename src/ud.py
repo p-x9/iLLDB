@@ -6,7 +6,7 @@ import util
 
 
 def __lldb_init_module(debugger: lldb.SBDebugger, internal_dict: dict) -> None:
-    debugger.HandleCommand('command script add -f ud.handle_command ud -h "UserDefault debugging[iLLDB]"')
+    debugger.HandleCommand('command script add -f ud.handle_command ud -h "UserDefault debugging. [iLLDB]"')
 
 
 def handle_command(
@@ -15,8 +15,9 @@ def handle_command(
         exe_ctx: lldb.SBExecutionContext,
         result: lldb.SBCommandReturnObject,
         internal_dict: dict) -> None:
+    parser = create_argparser()
     args: Union[list[str], argparse.Namespace] = shlex.split(command, posix=False)
-    args = parse_args(cast(list[str], args))
+    args = parser.parse_args(cast(list[str], args))
 
     script = ""
     if args.suite:
@@ -63,6 +64,9 @@ def handle_command(
             [userDefaults removeObjectForKey:key];
         }
         """
+    else:
+        parser.print_help()
+        exit(0)
 
     ret = util.exp_script(
         debugger,
@@ -73,7 +77,7 @@ def handle_command(
         result.AppendMessage(ret.GetObjectDescription())
 
 
-def parse_args(args: list[str]) -> argparse.Namespace:
+def create_argparser() -> argparse.ArgumentParser:
     description = "UserDefault debugging"
     parser = argparse.ArgumentParser(description=description,
                                      formatter_class=util.HelpFormatter)
@@ -81,46 +85,46 @@ def parse_args(args: list[str]) -> argparse.Namespace:
 
     # read
     read_command = subparsers.add_parser("read",
-                                         help="read UserDefault value",
+                                         help="Read UserDefault value",
                                          formatter_class=util.HelpFormatter)
-    read_command.add_argument("--suite", type=str, help="suite for UserDefault")
+    read_command.add_argument("--suite", type=str, help="Suite for UserDefault")
     read_command.add_argument("key",
                               type=str,
                               help="key")
 
     # write
     write_command = subparsers.add_parser("write",
-                                          help="write UserDefault value",
+                                          help="Write UserDefault value",
                                           formatter_class=util.HelpFormatter)
-    write_command.add_argument("--suite", type=str, help="suite for UserDefault")
+    write_command.add_argument("--suite", type=str, help="Suite for UserDefault")
     write_command.add_argument("key",
                                type=str,
-                               help="key")
+                               help="Key")
     write_command.add_argument("value",
                                type=str,
-                               help="value to set")
+                               help="Value to set")
     write_command.add_argument("--type",
                                type=str,
                                default='str',
-                               help="type of value to set['str', 'number']")
+                               help="Type of value to set['str', 'number']")
 
     # delete
     delete_command = subparsers.add_parser("delete",
-                                           help="delete UserDefault value",
+                                           help="Delete UserDefault value",
                                            formatter_class=util.HelpFormatter)
-    delete_command.add_argument("--suite", type=str, help="suite for UserDefault")
+    delete_command.add_argument("--suite", type=str, help="Suite for UserDefault")
     delete_command.add_argument("key",
                                 type=str,
-                                help="key")
+                                help="Key")
 
     read_all = subparsers.add_parser("read-all",
-                                     help="read all UserDefault value",
+                                     help="Read all UserDefault value",
                                      formatter_class=util.HelpFormatter)
-    read_all.add_argument("--suite", type=str, help="suite for UserDefault")
+    read_all.add_argument("--suite", type=str, help="Suite for UserDefault")
 
     delete_all = subparsers.add_parser("delete-all",
-                                       help="delete all UserDefault value",
+                                       help="Delete all UserDefault value",
                                        formatter_class=util.HelpFormatter)
-    delete_all.add_argument("--suite", type=str, help="suite for UserDefault")
+    delete_all.add_argument("--suite", type=str, help="Suite for UserDefault")
 
-    return parser.parse_args(args)
+    return parser
