@@ -6,7 +6,7 @@ import util
 
 
 def __lldb_init_module(debugger: lldb.SBDebugger, internal_dict: dict) -> None:
-    debugger.HandleCommand('command script add -f device.handle_command device -h "device debugging[iLLDB]"')
+    debugger.HandleCommand('command script add -f device.handle_command device -h "Device debugging. [iLLDB]"')
 
 
 def handle_command(
@@ -15,14 +15,17 @@ def handle_command(
         exe_ctx: lldb.SBExecutionContext,
         result: lldb.SBCommandReturnObject,
         internal_dict: dict) -> None:
+    parser = create_argparser()
     args: Union[list[str], argparse.Namespace] = shlex.split(command, posix=False)
-    args = parse_args(cast(list[str], args))
+    args = parser.parse_args(cast(list[str], args))
 
     if args.subcommand == "info":
         info(args, debugger, result)
+    else:
+        parser.print_help()
 
 
-def parse_args(args: list[str]) -> argparse.Namespace:
+def create_argparser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Device debugging",
                                      formatter_class=util.HelpFormatter)
     subparsers = parser.add_subparsers(title="Subcommands", dest="subcommand")
@@ -31,7 +34,7 @@ def parse_args(args: list[str]) -> argparse.Namespace:
                           help="Show device info",
                           formatter_class=util.HelpFormatter)
 
-    return parser.parse_args(args)
+    return parser
 
 
 def info(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCommandReturnObject) -> None:

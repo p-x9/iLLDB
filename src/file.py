@@ -7,7 +7,7 @@ import util
 
 
 def __lldb_init_module(debugger: lldb.SBDebugger, internal_dict: dict) -> None:
-    debugger.HandleCommand('command script add -f file.handle_command file -h "file debugging[iLLDB]"')
+    debugger.HandleCommand('command script add -f file.handle_command file -h "File debugging. [iLLDB]"')
 
 
 def handle_command(
@@ -16,8 +16,9 @@ def handle_command(
         exe_ctx: lldb.SBExecutionContext,
         result: lldb.SBCommandReturnObject,
         internal_dict: dict) -> None:
+    parser = create_argparser()
     args: Union[list[str], argparse.Namespace] = shlex.split(command, posix=False)
-    args = parse_args(cast(list[str], args))
+    args = parser.parse_args(cast(list[str], args))
 
     if args.subcommand == "tree":
         tree(args, debugger, result)
@@ -25,9 +26,11 @@ def handle_command(
         open(args, debugger, result)
     elif args.subcommand == "cat":
         cat(args, debugger, result)
+    else:
+        parser.print_help()
 
 
-def parse_args(args: list[str]) -> argparse.Namespace:
+def create_argparser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="File debugging",
                                      formatter_class=util.HelpFormatter)
     subparsers = parser.add_subparsers(title="Subcommands",
@@ -58,7 +61,7 @@ def parse_args(args: list[str]) -> argparse.Namespace:
                              help="path")
     cat_command.add_argument("--mode", type=str, default='text', help="mode [text, plist]")
 
-    return parser.parse_args(args)
+    return parser
 
 
 def tree(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCommandReturnObject) -> None:

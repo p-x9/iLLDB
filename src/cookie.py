@@ -6,7 +6,7 @@ import util
 
 
 def __lldb_init_module(debugger: lldb.SBDebugger, internal_dict: dict) -> None:
-    debugger.HandleCommand('command script add -f cookie.handle_command cookie -h "HTTP Cookie debugging[iLLDB]"')
+    debugger.HandleCommand('command script add -f cookie.handle_command cookie -h "HTTP Cookie debugging. [iLLDB]"')
 
 
 def handle_command(
@@ -15,8 +15,9 @@ def handle_command(
         exe_ctx: lldb.SBExecutionContext,
         result: lldb.SBCommandReturnObject,
         internal_dict: dict) -> None:
+    parser = create_argparser()
     args: Union[list[str], argparse.Namespace] = shlex.split(command, posix=False)
-    args = parse_args(cast(list[str], args))
+    args = parser.parse_args(cast(list[str], args))
 
     if args.subcommand == "read":
         read(args, debugger, result)
@@ -27,9 +28,11 @@ def handle_command(
             delete(args, debugger, result)
         else:
             print("Cancelled")
+    else:
+        parser.print_help()
 
 
-def parse_args(args: list[str]) -> argparse.Namespace:
+def create_argparser() -> argparse.ArgumentParser:
     description = "HTTP Cookie debugging"
     parser = argparse.ArgumentParser(description=description,
                                      formatter_class=util.HelpFormatter)
@@ -53,7 +56,7 @@ def parse_args(args: list[str]) -> argparse.Namespace:
     delete_command.add_argument("--name", type=str, help="Name for Cookie")
     delete_command.add_argument("--path", type=str, help="Path for Cookie")
 
-    return parser.parse_args(args)
+    return parser
 
 
 def read(args: argparse.Namespace, debugger: lldb.SBDebugger, result: lldb.SBCommandReturnObject) -> None:
