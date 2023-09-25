@@ -2,7 +2,7 @@ import lldb
 import shlex
 import argparse
 from typing import Union, cast
-from LLDBHelper.LLDBCommandBase import LLDBCommandBase
+from lldbhelper import LLDBCommandBase
 import util
 
 

@@ -2,7 +2,7 @@ import os
 import lldb
 import argparse
 from typing import Optional
-import LLDBHelper.SBValue  # noqa: F401
+from lldbhelper import SBValue  # noqa: F401
 
 
 def exp_script(

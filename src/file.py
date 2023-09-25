@@ -3,7 +3,7 @@ import shlex
 import argparse
 import subprocess
 from typing import Union, cast
-from LLDBHelper.LLDBCommandBase import LLDBCommandBase
+from lldbhelper import LLDBCommandBase
 import util
 
 
