@@ -5,11 +5,11 @@ import util
 
 @lldb.command('mirror', doc='Display child elements using Mirror. [iLLDB]')
 def mirror(
-        debugger: lldb.SBDebugger,
-        command: str,
-        exe_ctx: lldb.SBExecutionContext,
-        result: lldb.SBCommandReturnObject,
-        internal_dict: dict
+    debugger: lldb.SBDebugger,
+    command: str,
+    exe_ctx: lldb.SBExecutionContext,
+    result: lldb.SBCommandReturnObject,
+    internal_dict: dict
 ) -> None:
     """
     Display the child elements of an object using the Mirror class in Swift.
