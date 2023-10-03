@@ -28,7 +28,7 @@ def mirror(
     import Foundation
     let mirror = Mirror(reflecting: {args[0]})
     mirror.children.enumerated().forEach {{
-        print("\\($1.label ?? "[\\($0)]"): \\($1.value)")
+        print("\\($1.label ?? "[\\($0)]"): \\(String(reflecting: type(of: $1.value))) = \\($1.value)")
     }}
     """
     util.exp_script(
