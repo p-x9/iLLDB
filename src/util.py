@@ -134,5 +134,16 @@ def sysctlbyname(debugger: lldb.SBDebugger, key: str) -> Optional[str]:
         return None
 
 
+def currentLanguage(debugger: lldb.SBDebugger) -> int:
+    return (
+        debugger.GetSelectedTarget()
+        .GetProcess()
+        .GetSelectedThread()
+        .GetSelectedFrame()
+        .GetCompileUnit()
+        .GetLanguage()
+    )
+
+
 class HelpFormatter(argparse.RawTextHelpFormatter, argparse.ArgumentDefaultsHelpFormatter):
     pass
