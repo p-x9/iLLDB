@@ -27,13 +27,13 @@ class ObjcCommnad(LLDBCommandBase):
         )
         subparsers = parser.add_subparsers(title="Subcommands", dest="subcommand")
 
-        # inherites
-        inherites_command = subparsers.add_parser("inherites",
-                                                  help="Show class hierarchy of object",
-                                                  formatter_class=util.HelpFormatter)
-        inherites_command.add_argument("object",
-                                       type=str,
-                                       help="object")
+        # inherits
+        inherits_command = subparsers.add_parser("inherits",
+                                                 help="Show class hierarchy of object",
+                                                 formatter_class=util.HelpFormatter)
+        inherits_command.add_argument("object",
+                                      type=str,
+                                      help="object")
 
         # methods
         method_command = subparsers.add_parser("methods",
@@ -72,21 +72,21 @@ class ObjcCommnad(LLDBCommandBase):
 
         if args.subcommand == "methods":
             self.methods(args, debugger, result)
-        elif args.subcommand == "inherites":
-            self.inherites(args, debugger, result)
+        elif args.subcommand == "inherits":
+            self.inherits(args, debugger, result)
         elif args.subcommand == "properties":
             self.properties(args, debugger, result)
         else:
             self.argparser.print_help()
 
-    def inherites(
+    def inherits(
         self,
         args: argparse.Namespace,
         debugger: lldb.SBDebugger,
         result: lldb.SBCommandReturnObject
     ) -> None:
-        inherites = self.class_inherites(debugger, args.object)
-        result.AppendMessage(' -> '.join(inherites))
+        inherits = self.class_inherits(debugger, args.object)
+        result.AppendMessage(' -> '.join(inherits))
 
     def methods(
         self,
@@ -169,11 +169,11 @@ class ObjcCommnad(LLDBCommandBase):
                 The parsed class information, including class methods, instance methods, and properties.
                 Returns None if the class name is invalid or the object is invalid.
         """
-        inherites = self.class_inherites(debugger, object)
-        if class_name is not None and class_name not in inherites:
+        inherits = self.class_inherits(debugger, object)
+        if class_name is not None and class_name not in inherits:
             return None
         if class_name is None:
-            class_name = inherites[-1]
+            class_name = inherits[-1]
 
         script: str
 
@@ -196,7 +196,7 @@ class ObjcCommnad(LLDBCommandBase):
 
         return ClassInfoParser.parse(ret.GetObjectDescription())
 
-    def class_inherites(
+    def class_inherits(
         self,
         debugger: lldb.SBDebugger,
         object: str,
