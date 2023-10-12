@@ -152,6 +152,23 @@ class ObjcCommnad(LLDBCommandBase):
         object: str,
         class_name: Optional[str]
     ) -> Optional['ClassInfo']:
+        """
+        Retrieves information about a specific class in the Objective-C runtime.
+
+        Args:
+            debugger (lldb.SBDebugger):
+                An instance of the LLDB debugger.
+            object (str):
+                The name of the object for which to retrieve class information.
+            class_name (Optional[str]):
+                The name of the class for which to retrieve information.
+                If not provided, the last class in the object's class hierarchy will be used.
+
+        Returns:
+            Optional['ClassInfo']:
+                The parsed class information, including class methods, instance methods, and properties.
+                Returns None if the class name is invalid or the object is invalid.
+        """
         inherites = self.class_inherites(debugger, object)
         if class_name is not None and class_name not in inherites:
             return None
@@ -184,6 +201,17 @@ class ObjcCommnad(LLDBCommandBase):
         debugger: lldb.SBDebugger,
         object: str,
     ) -> list[str]:
+        """
+        Retrieve the class hierarchy of an object in Objective-C or Swift.
+
+        Args:
+            debugger (lldb.SBDebugger): An instance of `lldb.SBDebugger` used for debugging.
+            object (str): The name of the object for which to retrieve the class hierarchy.
+
+        Returns:
+            list[str]: A list of class names representing the class hierarchy of the object.
+        """
+
         script: str
 
         language: int = lldb.eLanguageTypeObjC_plus_plus
@@ -257,11 +285,29 @@ class Property:
 
 @dataclass
 class ClassInfo:
+    """
+    A data class that represents information about a class in Objective-C.
+
+    Attributes:
+        class_methods (list[Method]):
+            A list of Method objects representing the class methods of the class.
+        instance_methods (list[Method]):
+            A list of Method objects representing the instance methods of the class.
+        properties (list[Property]):
+            A list of Property objects representing the properties of the class.
+    """
+
     class_methods: list[Method]
     instance_methods: list[Method]
     properties: list[Property]
 
     def __str__(self) -> str:
+        """
+        Returns a string representation of the class information.
+
+        Returns:
+            str: A string representation of the class information.
+        """
         class_methods_description = "\n".join(list(map(lambda m: f"    {m}", self.class_methods)))
         instance_methods_description = "\n".join(list(map(lambda m: f"    {m}", self.instance_methods)))
         properties_description = "\n".join(list(map(lambda p: f"    {p}", self.properties)))
@@ -274,8 +320,45 @@ class ClassInfo:
 
 
 class ClassInfoParser:
+    """
+    This class is responsible for parsing a string representation of class information and converting it into a `ClassInfo` object.
+
+    Example Usage:
+    ```python
+    string = "		+ (void)classMethod1;\n		- (void)instanceMethod1;\n		@property (nonatomic, strong) NSString *property1;\n"
+    class_info = ClassInfoParser.parse(string)
+    print(class_info)
+    ```
+    Expected Output:
+    ```
+    Class Methods:
+        + (void)classMethod1
+    Instance Methods:
+        - (void)instanceMethod1
+    Properties:
+        property1
+    ```
+
+    Methods:
+    - parse(string: str) -> ClassInfo:
+        Parses the given string representation of class information and returns a `ClassInfo` object.
+    - parse_methods(lines: List[str], is_static: bool = False) -> List[Method]:
+        Parses the given list of lines and extracts the class methods or instance methods based on the value of the `is_static` parameter.
+    - parse_properties(lines: List[str]) -> List[Property]:
+        Parses the given list of lines and extracts the properties.
+    """
+
     @classmethod
     def parse(cls, string: str) -> ClassInfo:
+        """
+        Parses the given string representation of class information and returns a `ClassInfo` object.
+
+        Args:
+            string (str): The string representation of class information.
+
+        Returns:
+            ClassInfo: The parsed `ClassInfo` object.
+        """
         lines = string.splitlines()
         class_methods = cls.parse_methods(lines, is_static=True)
         instance_methods = cls.parse_methods(lines, is_static=False)
@@ -288,7 +371,21 @@ class ClassInfoParser:
         )
 
     @classmethod
-    def parse_methods(cls, lines: list[str], is_static: bool = False) -> list[Method]:
+    def parse_methods(
+        cls,
+        lines: list[str],
+        is_static: bool = False
+    ) -> list[Method]:
+        """
+        Parses the given list of lines and extracts the class methods or instance methods based on the value of the `is_static` parameter.
+
+        Args:
+            lines (list[str]): The list of lines to parse.
+            is_static (bool, optional): Indicates whether to parse class methods (True) or instance methods (False). Defaults to False.
+
+        Returns:
+            list[Method]: The list of parsed methods.
+        """
         operator = '+' if is_static else '-'
         lines = list(filter(lambda l: l[0:5] == f'		{operator} (', lines))
         lines = list(map(lambda l: l[2:], lines))
@@ -306,6 +403,15 @@ class ClassInfoParser:
 
     @classmethod
     def parse_properties(cls, lines: list[str]) -> list[Property]:
+        """
+        Parses the given list of lines and extracts the properties.
+
+        Args:
+            lines (list[str]): The list of lines to parse.
+
+        Returns:
+            list[Property]: The list of parsed properties.
+        """
         lines = list(filter(lambda l: '@property' in l, lines))
         lines = list(map(lambda l: l[2:], lines))
         properties = list[Property]()
