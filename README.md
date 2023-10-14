@@ -1,4 +1,5 @@
 # iLLDB
+
 LLDB Extension for iOS App Development
 
 <!-- # Badges -->
@@ -9,6 +10,7 @@ LLDB Extension for iOS App Development
 [![Github top language](https://img.shields.io/github/languages/top/p-x9/iLLDB)](https://github.com/p-x9/iLLDB/)
 
 ## Feature
+
 - [Show view hierarchy](#ui-hierarchy)
 - [Easy operation of UserDefaults](#userdefaults)
 - [Show device information](#device-info)
@@ -19,11 +21,18 @@ LLDB Extension for iOS App Development
 - [Easy operation of HTTP Cookie](#http-cookie)
   - [Show Cookie Values](#read-cookie-value)
   - [Delete Cookie](#delete-cookie)
+- [Objective-C Runtime](#objective-c-runtime)
+  - [Show inheritance hierarchy of object's class](#show-inheritance-hierarchy-of-objects-class)
+  - [Show list of methods of object's class](#show-a-list-of-methods-of-objects-class)
+  - [Show list of properties of object's class](#show-a-list-of-proerties-of-objects-class)
+  - [Show list of ivars of object's class](#show-a-list-of-ivars-of-objects-class)
 
 ## Set up
+
 1. clone this repository
 2. Add the following line to ~/.lldbinit
-    ```
+
+    ```sh
     command script import {PATH TO iLLDB}/src/iLLDB.py
     ```
 
@@ -343,6 +352,92 @@ optional arguments:
   cookie delete --domain example.com --name KEYNAME
   ```
 
+### Objective-C Runtime
+
+Commands for debugging with Objective-C Runtime
+
+#### Show inheritance hierarchy of object's class
+
+```sh
+(lldb) objc inherits -h
+usage:  inherits
+       [-h]
+       object
+positional arguments:
+  object
+    object
+optional arguments:
+  -h, --help
+    show this help message and exit
+```
+
+##### Example
+
+```sh
+(lldb)objc inherits UIWindow()
+# NSObject -> UIResponder -> UIView -> UIWindow
+```
+
+#### Show a list of methods of object's class
+
+```sh
+(lldb) objc methods -h
+usage:  methods
+       [-h]
+       [--class CLASS_NAME]
+       [-c]
+       [-i]
+       object
+positional arguments:
+  object
+    object
+optional arguments:
+  -h, --help
+    show this help message and exit
+  --class CLASS_NAME
+    Specify a target class in the inheritance hierarchy (default: None)
+  -c, --class-only
+    Show only class methods (default: False)
+  -i, --instance-only
+    Show only instance methods (default: False)
+```
+
+#### Show a list of proerties of object's class
+
+```sh
+(lldb) objc properties -h
+usage:  properties
+       [-h]
+       [--class CLASS_NAME]
+       object
+positional arguments:
+  object
+    object
+optional arguments:
+  -h, --help
+    show this help message and exit
+  --class CLASS_NAME
+    Specify a target class in the inheritance hierarchy (default: None)
+```
+
+#### Show a list of ivars of object's class
+
+```sh
+(lldb) objc ivars -h
+usage:  ivars
+       [-h]
+       [--class CLASS_NAME]
+       object
+positional arguments:
+  object
+    object
+optional arguments:
+  -h, --help
+    show this help message and exit
+  --class CLASS_NAME
+    Specify a target class in the inheritance hierarchy (default: None)
+```
 
 ## License
+
 iLLDB is released under the MIT License. See [LICENSE](./LICENSE)
