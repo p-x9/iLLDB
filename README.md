@@ -25,7 +25,7 @@ LLDB Extension for iOS App Development
   - [Show inheritance hierarchy of object's class](#show-inheritance-hierarchy-of-objects-class)
   - [Show list of methods of object's class](#show-a-list-of-methods-of-objects-class)
   - [Show list of properties of object's class](#show-a-list-of-proerties-of-objects-class)
-  - [Show a list of ivars of object's class](#show-a-list-of-ivars-of-objects-class)
+  - [Show list of ivars of object's class](#show-a-list-of-ivars-of-objects-class)
 
 ## Set up
 
