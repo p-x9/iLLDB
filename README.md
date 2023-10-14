@@ -39,7 +39,8 @@ LLDB Extension for iOS App Development
 ## Usage
 
 ### UI hierarchy
-```
+
+```sh
 (lldb) ui tree -h
 usage:  tree
        [-h]
@@ -74,44 +75,54 @@ optional arguments:
 ```
 
 #### Example
+
 - Show keyWindow hierarchy
+
     ```sh
     ui tree
     ```
+
     ![KeyWindow](./resources/keyWindow.png)
 
     ```sh
     ui tree -s # simple
     ```
+
     ![KeyWindow](./resources/keyWindow-simple.png)
 
     ```sh
     ui tree -d # detail
     ```
+
     ![KeyWindow](./resources/keyWindow-detail.png)
 
 - Show the hierarchy of a specific view
-    ```
+
+    ```sh
     ui tree -view {property name of view}
     ```
 
 - Show the hierarchy of a specific viewController
-    ```
+
+    ```sh
     ui tree -vc {property name of viewController}
     ```
 
 - Show the hierarchy of a specific window
-    ```
+
+    ```sh
     ui tree -window {property name of window}
     ```
 
 - Show the hierarchy of a specific layer
-    ```
+
+    ```sh
     ui tree -layer {property name of layer}
     ```
 
 ### UserDefaults
-```
+
+```sh
 usage:
        [-h]
        {read,write,delete,read-all,delete-all}
@@ -133,47 +144,60 @@ Subcommands:
     delete-all
     delete all UserDefault value
 ```
+
 #### read
+
 ```sh
 ud read "key"
 ```
 
 #### write
+
 ```sh
 ud write "key" "value"
 ```
 
 #### delete
+
 ```sh
 ud delete "key"
 ```
 
 #### read all
+
 ```sh
 ud read-all
 ```
 
 #### delete all
+
 ```sh
 ud delete-all
 ```
 
 ### Device Info
+
 Displays device information.
+
 ```sh
 device info
 ```
+
 ![device info](./resources/device-info.png)
 
 ### App Info
+
 Displays App information.
+
 ```sh
 app info
 ```
+
 ![app info](./resources/app-info.png)
 
 ### File hierarchy
-```
+
+```sh
 (lldb) file tree -h
 usage:  tree
        [-h]
@@ -199,34 +223,42 @@ optional arguments:
 ```
 
 #### Example
+
 - Display the contents of the Bundle directory
+
     ```sh
     file tree --bundle
     ```
 
 - Display the contents of the Library directory
+
     ```sh
     file tree --library
     ```
 
 - Display the contents of the Documents directory
+
     ```sh
     file tree --documents
     ```
 
 - Display the contents of the tmp directory
+
     ```sh
     file tree --tmp
     ```
 
 - Display the contents of a specific directory
+
     ```sh
     file tree {url}
     ```
+
 ![file tree](./resources/file-tree.png)
 
 ### Open directory in Finder App (Simulator Only)
-```
+
+```sh
 (lldb) file open -h
 usage:  open
        [-h]
@@ -248,7 +280,8 @@ optional arguments:
 ```
 
 ### Show file Contents
-```
+
+```sh
 (lldb) file cat -h
 usage:  cat
        [-h]
@@ -265,19 +298,26 @@ optional arguments:
 ```
 
 #### Example
+
 - text file
-  ```
+
+  ```sh
   file cat "path"
   ```
+
 - plist file
-  ```
+
+  ```sh
   file cat "path" --mode plist
   ```
 
 ### HTTP Cookie
+
 #### Read Cookie Value
+
 Displays the value of the HTTP cookie information.
-```
+
+```sh
 (lldb) cookie read -h
 usage:  read
        [-h]
@@ -297,27 +337,35 @@ optional arguments:
   --path PATH
     Path for Cookie (default: None)
 ```
+
 ##### Example
+
 - Show all cookies
+
   ```sh
   cookie read
   ```
+
 - Show only cookies for specific domains
+
   ```sh
   cookie read --domain example.com
   ```
+
 - Show only cookies with a specific name from a specific domain
+
   ```sh
   cookie read --domain example.com --name KEYNAME
   ```
 
 #### Delete Cookie
+
 Delete cookie value.
 
 After executing the command, you will be asked to confirm before deleting.
 If you type "Yes", the deletion will be executed as is.
 
-```
+```sh
 (lldb) cookie delete -h
 usage:  delete
        [-h]
@@ -339,15 +387,21 @@ optional arguments:
 ```
 
 ##### Example
+
 - Delete all cookies
+
   ```sh
   cookie delete
   ```
+
 - Delete only cookies for specific domains
+
   ```sh
   cookie delete --domain example.com
   ```
+
 - Delete only cookies with a specific name from a specific domain
+
   ```sh
   cookie delete --domain example.com --name KEYNAME
   ```
