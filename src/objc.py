@@ -42,7 +42,10 @@ class ObjcCommnad(LLDBCommandBase):
         method_command.add_argument("object",
                                     type=str,
                                     help="object")
-        method_command.add_argument("--class", dest='class_name', type=str, help="Specify a target class in the inheritance hierarchy")
+        method_command.add_argument("--class",
+                                    dest='class_name',
+                                    type=str,
+                                    help="Specify a target class in the inheritance hierarchy")
         method_command.add_argument("-c", "--class-only", action="store_true", help="Show only class methods")
         method_command.add_argument("-i", "--instance-only", action="store_true", help="Show only instance methods")
 
@@ -57,6 +60,18 @@ class ObjcCommnad(LLDBCommandBase):
                                         dest='class_name',
                                         type=str,
                                         help="Specify a target class in the inheritance hierarchy")
+
+        # ivars
+        ivars_command = subparsers.add_parser("ivars",
+                                              help="Show ivar list of object",
+                                              formatter_class=util.HelpFormatter)
+        ivars_command.add_argument("object",
+                                   type=str,
+                                   help="object")
+        ivars_command.add_argument("--class",
+                                   dest='class_name',
+                                   type=str,
+                                   help="Specify a target class in the inheritance hierarchy")
 
         return parser
 
@@ -76,6 +91,8 @@ class ObjcCommnad(LLDBCommandBase):
             self.inherits(args, debugger, result)
         elif args.subcommand == "properties":
             self.properties(args, debugger, result)
+        elif args.subcommand == "ivars":
+            self.ivars(args, debugger, result)
         else:
             self.argparser.print_help()
 
@@ -144,6 +161,22 @@ class ObjcCommnad(LLDBCommandBase):
         text += '\n'.join(map(lambda p: f"    {p.name}", class_info.properties))
         text += '\n'
 
+        result.AppendMessage(text)
+
+    def ivars(
+        self,
+        args: argparse.Namespace,
+        debugger: lldb.SBDebugger,
+        result: lldb.SBCommandReturnObject
+    ) -> None:
+        ivars = self.class_ivars(
+            debugger,
+            args.object,
+            args.class_name
+        )
+
+        text = "Ivars:\n"
+        text += '\n'.join(map(lambda v: f"    {v}", ivars))
         result.AppendMessage(text)
 
     def class_info(
@@ -256,8 +289,42 @@ class ObjcCommnad(LLDBCommandBase):
         else:
             return []
 
+    def class_ivars(
+        self,
+        debugger: lldb.SBDebugger,
+        object: str,
+        class_name: Optional[str]
+    ) -> list['IVar']:
+        inherits = self.class_inherits(debugger, object)
+        if class_name is not None and class_name not in inherits:
+            return None
+        if class_name is None:
+            class_name = inherits[-1]
+
+        script = ''
+
+        language: int = lldb.eLanguageTypeObjC
+        if util.currentLanguage(debugger) == lldb.eLanguageTypeSwift:
+            script = f"""
+            {object}.perform(Selector(("__ivarDescriptionForClass:")), with: NSClassFromString("{class_name}"))
+            """
+            language = lldb.eLanguageTypeSwift
+        else:
+            script = f"""
+            (NSString *)[{object} __ivarDescriptionForClass: NSClassFromString(@"{class_name}")];
+            """
+
+        ret = util.exp_script(
+            debugger,
+            script,
+            lang=language
+        )
+
+        return IVarParser.parse(ret.GetObjectDescription())
+
 
 from dataclasses import dataclass
+import re
 
 
 @dataclass
@@ -429,3 +496,78 @@ class ClassInfoParser:
             properties.append(Property(name, dynamic))
 
         return properties
+
+
+@dataclass
+class IVar:
+    """
+    Represents an instance variable in Objective-C.
+
+    Attributes:
+        name (str): The name of the instance variable.
+        type (str): The type of the instance variable.
+        value (str): The value of the instance variable.
+    """
+
+    name: str
+    type: str
+    value: str
+
+    def __str__(self) -> str:
+        """
+        Returns a string representation of the instance variable.
+
+        Returns:
+            str: The string representation of the instance variable.
+        """
+        return f"{self.name} = ({self.type}) {self.value}"
+
+
+class IVarParser:
+    """
+    A class for parsing a string representation of Objective-C instance variables and converting them into a list of IVar objects.
+    """
+
+    @classmethod
+    def parse(cls, string: str) -> list:
+        """
+        Parses a string representation of Objective-C instance variables and returns a list of IVar objects.
+
+        Args:
+            string (str): The string representation of Objective-C instance variables.
+
+        Returns:
+            list: A list of IVar objects.
+
+        Example:
+            string = "	_debugName (NSString*): @"UIWindow-0x10950ea70-0""
+            ivars = IVarParser.parse(string)
+            for ivar in ivars:
+                print(ivar.name)
+                print(ivar.type)
+                print(ivar.value)
+
+            Output:
+            _debugName
+            NSString *
+            @"UIWindow-0x10950ea70-0""
+        """
+        lines = string.splitlines()
+
+        ivars = []
+
+        for i, line in enumerate(lines):
+            if line.startswith('		'):
+                ivars[-1].value += f"\n{line}"
+            elif line.startswith('	}'):
+                ivars[-1].value += "\n	}"
+            elif line.startswith('	'):
+                components = line.split(' ')
+                name = components[0].replace('	', '')
+
+                type_match = re.search(r'\((.*?)\)', line)
+                type = type_match.group(1)
+                value = line[type_match.end() + 2:]
+                ivars.append(IVar(name, type, value))
+
+        return ivars
