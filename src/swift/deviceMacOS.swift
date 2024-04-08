@@ -19,6 +19,8 @@ func printDeviceInfo() {
     if let cpu = sysctlByString(key: "machdep.cpu.brand_string") {
         print("CPU:            \(cpu)")
     }
+
+    print("Locale:         \(Locale.current)")
 }
 
 func sysctlByString(key: String) -> String? {
