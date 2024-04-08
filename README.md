@@ -201,15 +201,17 @@ app info
 (lldb) file tree -h
 usage:  tree
        [-h]
+       [-p PATH]
        [-b]
        [-l]
        [--documents]
        [--tmp]
        [--depth DEPTH]
-
 optional arguments:
   -h, --help
     show this help message and exit
+  -p PATH, --path PATH
+    path (default: None)
   -b, --bundle
     bundle directory (default: False)
   -l, --library
@@ -262,21 +264,24 @@ optional arguments:
 (lldb) file open -h
 usage:  open
        [-h]
+       [-p PATH]
        [-b]
        [-l]
        [--documents]
-       [--tmp TMP]
+       [--tmp]
 optional arguments:
   -h, --help
     show this help message and exit
+  -p PATH, --path PATH
+    path (default: None)
   -b, --bundle
     bundle directory (default: False)
   -l, --library
     library directory (default: False)
   --documents
     documents directory (default: False)
-  --tmp TMP
-    tmp directory (default: None)
+  --tmp
+    tmp directory (default: False)
 ```
 
 ### Show file Contents
