@@ -253,7 +253,7 @@ optional arguments:
 - Display the contents of a specific directory
 
     ```sh
-    file tree {url}
+    file tree --path {url}
     ```
 
 ![file tree](./resources/file-tree.png)
