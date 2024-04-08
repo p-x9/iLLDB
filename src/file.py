@@ -30,6 +30,7 @@ class FileCommnad(LLDBCommandBase):
         tree_command = subparsers.add_parser("tree",
                                              help="Show file hierarchie",
                                              formatter_class=util.HelpFormatter)
+        tree_command.add_argument("-p", "--path", type=str, help="path")
         tree_command.add_argument("-b", "--bundle", action="store_true", help="bundle directory")
         tree_command.add_argument("-l", "--library", action="store_true", help="library directory")
         tree_command.add_argument("--documents", action="store_true", help="documents directory")
@@ -39,6 +40,7 @@ class FileCommnad(LLDBCommandBase):
         open_command = subparsers.add_parser("open",
                                              help="Open directory with Finder (Simulator Only)",
                                              formatter_class=util.HelpFormatter)
+        open_command.add_argument("-p", "--path", type=str, required=False, help="path")
         open_command.add_argument("-b", "--bundle", action="store_true", help="bundle directory")
         open_command.add_argument("-l", "--library", action="store_true", help="library directory")
         open_command.add_argument("--documents", action="store_true", help="documents directory")
@@ -92,7 +94,10 @@ class FileCommnad(LLDBCommandBase):
         elif args.tmp:
             script += f"listFilesInDirectory(FileManager.default.temporaryDirectory, depth: {depth})"
         elif args.path:
-            script += f"listFilesInDirectory(URL(fileURLWithPath: {args.path}), depth: {depth})"
+            path: str = args.path
+            if not path.startswith('"') and not path.endswith('"'):
+                path = f"\"{path}\""
+            script += f"listFilesInDirectory(URL(fileURLWithPath: {path}), depth: {depth})"
 
         _ = util.exp_script(
             debugger,
@@ -116,7 +121,10 @@ class FileCommnad(LLDBCommandBase):
         elif args.tmp:
             script += "FileManager.default.temporaryDirectory.path"
         elif args.path:
-            shell += f"{args.path}"
+            path: str = args.path
+            if not path.startswith('"') and not path.endswith('"'):
+                path = f"\"{path}\""
+            shell += f"{path}"
 
         if script != "":
             ret = util.exp_script(debugger, script)
