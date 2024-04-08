@@ -2,7 +2,7 @@ import lldb
 import os
 import lldbhelper  # noqa: F401
 
-iLLDB_VERSION = "0.7.0"
+iLLDB_VERSION = "0.8.0"
 
 
 def __lldb_init_module(debugger: lldb.SBDebugger, internal_dict: dict) -> None:
