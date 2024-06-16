@@ -135,7 +135,7 @@ def sysctlbyname(debugger: lldb.SBDebugger, key: str) -> Optional[str]:
 
 
 def currentLanguage(debugger: lldb.SBDebugger) -> int:
-    return (
+    return (  # type: ignore[no-any-return]
         debugger.GetSelectedTarget()
         .GetProcess()
         .GetSelectedThread()

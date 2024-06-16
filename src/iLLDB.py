@@ -30,4 +30,4 @@ def load_commands(dir_name: str, debugger: lldb.SBDebugger) -> None:
         else:
             continue
 
-        lldb.debugger.HandleCommand(cmd + full_path)
+        debugger.HandleCommand(cmd + full_path)

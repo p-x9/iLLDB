@@ -84,6 +84,7 @@ class ObjcCommnad(LLDBCommandBase):
     ) -> None:
         args: Union[list[str], argparse.Namespace] = shlex.split(command, posix=False)
         args = self.argparser.parse_args(cast(list[str], args))
+        args = cast(argparse.Namespace, args)
 
         if args.subcommand == "methods":
             self.methods(args, debugger, result)
@@ -297,7 +298,7 @@ class ObjcCommnad(LLDBCommandBase):
     ) -> list['IVar']:
         inherits = self.class_inherits(debugger, object)
         if class_name is not None and class_name not in inherits:
-            return None
+            return []
         if class_name is None:
             class_name = inherits[-1]
 
@@ -459,7 +460,7 @@ class ClassInfoParser:
         methods = list[Method]()
 
         for line in lines:
-            lines = line.replace('	', '')
+            line = line.replace('	', '')
             components = line.split('; ')
             name = components[0] + ';'
             ptr = components[1].replace('(', '').replace(')', '')
@@ -484,7 +485,7 @@ class ClassInfoParser:
         properties = list[Property]()
 
         for line in lines:
-            lines = line.replace('	', '')
+            line = line.replace('	', '')
             components = line.split('; ')
             name = components[0] + ';'
             name = name.replace(';;', ';')
@@ -554,7 +555,7 @@ class IVarParser:
         """
         lines = string.splitlines()
 
-        ivars = []
+        ivars = list[IVar]()
 
         for i, line in enumerate(lines):
             if line.startswith('		'):
@@ -566,8 +567,9 @@ class IVarParser:
                 name = components[0].replace('	', '')
 
                 type_match = re.search(r'\((.*?)\)', line)
-                type = type_match.group(1)
-                value = line[type_match.end() + 2:]
-                ivars.append(IVar(name, type, value))
+                if type_match is not None:
+                    type = type_match.group(1)
+                    value = line[type_match.end() + 2:]
+                    ivars.append(IVar(name, type, value))
 
         return ivars
