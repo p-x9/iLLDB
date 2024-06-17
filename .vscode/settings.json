@@ -1,19 +1,29 @@
 {
   "editor.formatOnSave": true,
   "editor.formatOnPaste": true,
-
   "[python]": {
     "editor.defaultFormatter": "ms-python.autopep8"
   },
-
-  "flake8.args": ["--ignore=E226 E401 E402 E741", "--max-line-length=150"],
-  "autopep8.args": ["--ignore=E402", "--max-line-length=150", "--aggressive"],
-  "mypy-type-checker.args": ["--config-file=mypy.ini"],
+  "flake8.args": [
+    "--ignore=E226 E401 E402 E741",
+    "--max-line-length=150"
+  ],
+  "autopep8.args": [
+    "--ignore=E402",
+    "--max-line-length=150",
+    "--aggressive"
+  ],
+  "mypy-type-checker.args": [
+    "--config-file=mypy.ini"
+  ],
   "mypy.configFile": "mypy.ini",
   "terminal.integrated.env.osx": {
     "PYTHONPATH": "/Applications/Xcode.app/Contents/SharedFrameworks/LLDB.framework/Resources/Python"
   },
-  "markdown.extension.toc.updateOnSave": false
+  "python.analysis.extraPaths": [
+    "/Applications/Xcode.app/Contents/SharedFrameworks/LLDB.framework/Resources/Python"
+  ],
+  "markdown.extension.toc.updateOnSave": false,
   // "python.linting.mypyEnabled": true,
   // "python.linting.enabled": true,
 }

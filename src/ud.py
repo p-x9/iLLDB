@@ -81,6 +81,7 @@ class UserDefaultsCommnad(LLDBCommandBase):
     ) -> None:
         args: Union[list[str], argparse.Namespace] = shlex.split(command, posix=False)
         args = self.argparser.parse_args(cast(list[str], args))
+        args = cast(argparse.Namespace, args)
 
         if args.subcommand is None:
             self.argparser.print_help()
